@@ -1,0 +1,27 @@
+name: aplikasi_sd_zaha
+description: "Aplikasi SD ZAHA"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  firebase_core: ^2.27.0
+  firebase_messaging: ^14.7.19
+  url_launcher: ^6.2.5
+  image_picker: ^1.2.3
+  google_fonts: ^8.2.1
+  font_awesome_flutter: ^10.7.0 # Ditambahkan untuk ikon TikTok, Twitter, Facebook, dll.
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - shorebird.yaml
+  uses-material-design: true
