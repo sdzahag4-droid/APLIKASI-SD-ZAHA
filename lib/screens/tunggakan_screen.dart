@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
-import '../config.dart'; // Pastikan path import config.dart sesuai dengan struktur folder Anda
+import '../config.dart' as config;
 
 class TunggakanScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -39,7 +39,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
     setState(() { _isLoading = true; });
     try {
       final response = await http.post(
-        Uri.parse(url), // Mengambil URL dari config.dart
+        Uri.parse(config.url), // Diperbaiki menggunakan config.url
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"action": "get_tunggakan"}),
       );
@@ -74,7 +74,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
       setState(() { _isLoading = true; });
       try {
         final response = await http.post(
-          Uri.parse(url),
+          Uri.parse(config.url), // Diperbaiki menggunakan config.url
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
             "action": "upload_tunggakan",
@@ -116,7 +116,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
       setState(() { _isLoading = true; });
       try {
         final response = await http.post(
-          Uri.parse(url),
+          Uri.parse(config.url), // Diperbaiki menggunakan config.url
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
             "action": "hapus_tunggakan",
