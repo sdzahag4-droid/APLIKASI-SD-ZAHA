@@ -16,17 +16,66 @@ class AbsenWaliScreen extends StatefulWidget {
 class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
   late Map<String, dynamic> currentUser;
   bool _isUploading = false;
+  bool _isLoadingSummary = true;
   final ImagePicker _picker = ImagePicker();
 
-  int totalSiswa = 28;
-  int totalHadir = 25;
-  int totalIzin = 2;
-  int totalAlpa = 1;
+  int totalSiswa = 0;
+  int totalHadir = 0;
+  int totalIzin = 0;
+  int totalAlpa = 0;
 
   @override
   void initState() {
     super.initState();
     currentUser = Map<String, dynamic>.from(widget.userData);
+    _fetchRingkasanAbsen();
+  }
+
+  // Fungsi untuk mengambil ringkasan data siswa & absensi berdasarkan kelas guru aktif
+  Future<void> _fetchRingkasanAbsen() async {
+    setState(() => _isLoadingSummary = true);
+    try {
+      String kelas = currentUser['kelas'] ?? '5A';
+      String idLembaga = currentUser['id_lembaga'] ?? '';
+
+      final response = await http.get(
+        Uri.parse('${AppConfig.apiUrl}?action=getSiswaKelas&kelas=$kelas&id_lembaga=$idLembaga'),
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      );
+
+      final result = jsonDecode(response.body);
+
+      if (result['status'] == 'success') {
+        List dataSiswa = result['data'] ?? [];
+        
+        // Hitung statistik secara dinamis dari data API
+        int hadir = 0;
+        int izin = 0;
+        int alpa = 0;
+
+        for (var siswa in dataSiswa) {
+          String status = (siswa['status'] ?? 'Hadir').toString().toLowerCase();
+          if (status == 'hadir') {
+            hadir++;
+          } else if (status == 'izin' || status == 'sakit') {
+            izin++;
+          } else {
+            alpa++;
+          }
+        }
+
+        setState(() {
+          totalSiswa = dataSiswa.length;
+          totalHadir = hadir > 0 ? hadir : dataSiswa.length; // Default hadir jika belum absen
+          totalIzin = izin;
+          totalAlpa = alpa;
+        });
+      }
+    } catch (e) {
+      // Jika gagal, biarkan nilai default atau tangani error senyap
+    } finally {
+      if (mounted) setState(() => _isLoadingSummary = false);
+    }
   }
 
   void _pickAndUploadImage() {
@@ -330,49 +379,56 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
             ),
             const SizedBox(height: 12),
 
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    icon: Icons.groups,
-                    label: "Siswa",
-                    value: "$totalSiswa",
-                    color: Colors.blue.shade700,
-                    bgColor: Colors.blue.shade50,
+            _isLoadingSummary
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.groups,
+                          label: "Siswa",
+                          value: "$totalSiswa",
+                          color: Colors.blue.shade700,
+                          bgColor: Colors.blue.shade50,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.check_circle,
+                          label: "Hadir",
+                          value: "$totalHadir",
+                          color: Colors.green.shade700,
+                          bgColor: Colors.green.shade50,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.info,
+                          label: "Izin",
+                          value: "$totalIzin",
+                          color: Colors.amber.shade800,
+                          bgColor: Colors.amber.shade50,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.cancel,
+                          label: "Alpa",
+                          value: "$totalAlpa",
+                          color: Colors.red.shade700,
+                          bgColor: Colors.red.shade50,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildStatCard(
-                    icon: Icons.check_circle,
-                    label: "Hadir",
-                    value: "$totalHadir",
-                    color: Colors.green.shade700,
-                    bgColor: Colors.green.shade50,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildStatCard(
-                    icon: Icons.info,
-                    label: "Izin",
-                    value: "$totalIzin",
-                    color: Colors.amber.shade800,
-                    bgColor: Colors.amber.shade50,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildStatCard(
-                    icon: Icons.cancel,
-                    label: "Alpa",
-                    value: "$totalAlpa",
-                    color: Colors.red.shade700,
-                    bgColor: Colors.red.shade50,
-                  ),
-                ),
-              ],
-            ),
 
             const SizedBox(height: 24),
 
@@ -398,7 +454,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                   MaterialPageRoute(
                     builder: (context) => AbsensiSiswaScreen(userData: currentUser),
                   ),
-                );
+                ).then((_) => _fetchRingkasanAbsen()); // Refresh ringkasan setelah kembali
               },
             ),
 
@@ -539,7 +595,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 }
 
 // ==========================================
-// KELAS TAMBAHAN DI FILE YANG SAMA (DIPERBAIKI)
+// KELAS ABSENSI SISWA (DINAMIS MENGAMBIL API)
 // ==========================================
 class AbsensiSiswaScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -550,18 +606,56 @@ class AbsensiSiswaScreen extends StatefulWidget {
 }
 
 class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
-  bool _isLoading = false;
+  bool _isLoading = true;
+  bool _isSaving = false;
+  List<Map<String, dynamic>> daftarSisamDinamic = [];
 
-  List<Map<String, dynamic>> daftarSiswa = [
-    {"nis": "001", "nama": "Ahmad Rizky", "status": "Hadir"},
-    {"nis": "002", "nama": "Budi Santoso", "status": "Hadir"},
-    {"nis": "003", "nama": "Siti Fatimah", "status": "Hadir"},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchDataSiswaAPI();
+  }
 
-  Future<void> _simpanAbsensi() async {
+  Future<void> _fetchDataSiswaAPI() async {
     setState(() => _isLoading = true);
     try {
-      // Mengirim data absensi ke backend Apps Script
+      String kelas = widget.userData?['kelas'] ?? '5A';
+      String idLembaga = widget.userData?['id_lembaga'] ?? '';
+
+      final response = await http.get(
+        Uri.parse('${AppConfig.apiUrl}?action=getSiswaKelas&kelas=$kelas&id_lembaga=$idLembaga'),
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      );
+
+      final result = jsonDecode(response.body);
+
+      if (result['status'] == 'success') {
+        List rawData = result['data'] ?? [];
+        setState(() {
+          daftarSisamDinamic = rawData.map<Map<String, dynamic>>((item) {
+            return {
+              "nis": item['nis'] ?? item['username'] ?? '-',
+              "nama": item['nama'] ?? item['Nama'] ?? 'Tanpa Nama',
+              "status": item['status'] ?? 'Hadir',
+            };
+          }).toList();
+        });
+      } else {
+        throw Exception(result['message'] ?? 'Gagal memuat data siswa.');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error memuat siswa: $e"), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _simpanAbsensi() async {
+    setState(() => _isSaving = true);
+    try {
       final response = await http.post(
         Uri.parse(AppConfig.apiUrl),
         headers: {'Content-Type': 'text/plain;charset=utf-8'},
@@ -569,7 +663,8 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
           'action': 'simpanAbsensiSiswa',
           'kelas': widget.userData?['kelas'] ?? '5A',
           'waliKelas': widget.userData?['nama'] ?? '',
-          'dataSiswa': daftarSiswa,
+          'id_lembaga': widget.userData?['id_lembaga'] ?? '',
+          'dataSiswa': daftarSisamDinamic,
         }),
       );
 
@@ -583,6 +678,7 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
             backgroundColor: Colors.green,
           ),
         );
+        Navigator.pop(context); // Kembali ke dashboard setelah simpan
       } else {
         throw Exception(result['message'] ?? "Gagal menyimpan ke server.");
       }
@@ -592,7 +688,7 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
         SnackBar(content: Text("Gagal menyimpan: $e"), backgroundColor: Colors.red),
       );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -606,63 +702,72 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
         backgroundColor: const Color(0xFF1E293B),
         foregroundColor: Colors.white,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: daftarSiswa.length,
-              itemBuilder: (context, index) {
-                var siswa = daftarSiswa[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(siswa['nama'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("NIS: ${siswa['nis']}"),
-                    trailing: DropdownButton<String>(
-                      value: siswa['status'],
-                      items: ["Hadir", "Izin", "Sakit", "Alpha"]
-                          .map((status) => DropdownMenuItem(
-                                value: status,
-                                child: Text(status),
-                              ))
-                          .toList(),
-                      onChanged: (val) {
-                        setState(() {
-                          daftarSiswa[index]['status'] = val!;
-                        });
-                      },
-                    ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : daftarSisamDinamic.isEmpty
+              ? const Center(
+                  child: Text(
+                    "Tidak ada data siswa untuk kelas ini.",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: _isLoading ? null : _simpanAbsensi,
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: daftarSisamDinamic.length,
+                        itemBuilder: (context, index) {
+                          var siswa = daftarSisamDinamic[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: ListTile(
+                              title: Text(siswa['nama'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text("NIS: ${siswa['nis']}"),
+                              trailing: DropdownButton<String>(
+                                value: siswa['status'],
+                                items: ["Hadir", "Izin", "Sakit", "Alpha"]
+                                    .map((status) => DropdownMenuItem(
+                                          value: status,
+                                          child: Text(status),
+                                        ))
+                                    .toList(),
+                                onChanged: (val) {
+                                  setState(() {
+                                    daftarSisamDinamic[index]['status'] = val!;
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    )
-                  : const Text("Simpan & Kirim Absensi", style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ],
-      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(50),
+                          backgroundColor: const Color(0xFF2563EB),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: _isSaving ? null : _simpanAbsensi,
+                        child: _isSaving
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text("Simpan & Kirim Absensi", style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
     );
   }
 }
