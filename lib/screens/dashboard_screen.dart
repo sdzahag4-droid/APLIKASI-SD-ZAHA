@@ -437,21 +437,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     );
                   },
                 ),
-                if (role == 'Guru Kelas')
-                  _buildMenuTile(
-                    context,
-                    Icons.how_to_reg,
-                    "Wali Kelas",
-                    Colors.orange,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) => AbsenWaliScreen(userData: widget.userData),
-                        ),
-                      );
-                    },
-                  ),
+                if (widget.userData['role'] == 'Guru Kelas' || widget.userData['jabatan'] == 'Wali Kelas')
+                _buildMenuTile(
+                  context,
+                  Icons.supervisor_account,
+                  "Wali Kelas",
+                  Colors.green,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AbsenWaliScreen(userData: widget.userData),
+                      ),
+                    );
+                  },
+                ),
                 _buildMenuTile(
                   context,
                   Icons.calendar_today,
