@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class AgendaScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
 
@@ -12,7 +13,6 @@ class AgendaScreen extends StatefulWidget {
 class _AgendaScreenState extends State<AgendaScreen> {
   bool isAdmin = false;
 
-  // Data Agenda Sekolah (Dapat ditambah dan dihapus oleh admin)
   // Data Agenda Sekolah (Dapat ditambah manual oleh admin)
   final List<Map<String, String>> _agendaList = [
     {
@@ -151,12 +151,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
   @override
   Widget build(BuildContext context) {
-  @override
-  Widget build(BuildContext context) {
-    // Cek apakah user yang login adalah Admin
-    String role = widget.userData['role'] ?? '';
-    bool isAdmin = role.toLowerCase().contains('admin');
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agenda Kegiatan Sekolah', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
