@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 import '../config.dart';
 
 class InformasiScreen extends StatefulWidget {
@@ -19,16 +16,12 @@ class _InformasiScreenState extends State<InformasiScreen> {
   final _judulController = TextEditingController();
   final _isiController = TextEditingController();
   bool _isLoading = false;
-<<<<<<< HEAD
   bool isAdmin = false;
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
   // Key untuk memicu refresh FutureBuilder tanpa perlu reload halaman
   Key _futureKey = UniqueKey();
 
   @override
-<<<<<<< HEAD
   void initState() {
     super.initState();
     _cekStatusAdmin();
@@ -46,8 +39,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
   }
 
   @override
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   void dispose() {
     _judulController.dispose();
     _isiController.dispose();
@@ -131,7 +122,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
     }
   }
 
-<<<<<<< HEAD
   // Fungsi Hapus Informasi
   Future<void> _hapusInfo(dynamic idOrIndex) async {
     showDialog(
@@ -192,8 +182,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
     );
   }
 
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   // Fungsi Menampilkan Dialog Form Input
   void _showAddDialog() {
     _judulController.clear();
@@ -264,12 +252,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-=======
-    // Pembatasan Hak Akses: Hanya Admin yang bisa melihat FAB Tambah Info
-    bool isAdmin = widget.userData['role'] == 'Admin';
-
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     return Scaffold(
       appBar: AppBar(
         title: const Text("Informasi Penting", style: TextStyle(color: Colors.white)),
@@ -316,7 +298,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
               return ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: reversedList.length,
-<<<<<<< HEAD
                 itemBuilder: (c, i) {
                   var item = reversedList[i];
                   // Ambil ID unik baris jika ada, atau gunakan index asli / judul sebagai identifier
@@ -365,37 +346,6 @@ class _InformasiScreenState extends State<InformasiScreen> {
                     ),
                   );
                 },
-=======
-                itemBuilder: (c, i) => Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(12),
-                    title: Text(
-                      reversedList[i]['Judul_Informasi'] ?? '',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 6.0),
-                    child: Text(
-                      reversedList[i]['Isi_Informasi'] ?? '',
-                      style: const TextStyle(fontSize: 14), // <-- Pindahkan ke sini
-                      ),
-                    ),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        reversedList[i]['Tanggal'] ?? '',
-                        style: TextStyle(fontSize: 11, color: Colors.red.shade700, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               );
             } catch (e) {
               return const Center(child: Text("Format data informasi tidak valid."));

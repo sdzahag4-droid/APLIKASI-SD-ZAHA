@@ -1,10 +1,6 @@
 class AppConfig {
   // Config Nama Lembaga & Aplikasi
-<<<<<<< HEAD
   static const String appName = "Zaha Verse";
-=======
-  static const String appName = "SDZAHA";
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   static const String namaLembaga = "SD ZAINUL HASAN GENGGONG";
 
   // ID Lembaga (Sesuai dengan id_lembaga di Google Sheets)

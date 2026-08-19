@@ -14,19 +14,12 @@ class _KenaikanKelasScreenState extends State<KenaikanKelasScreen> {
   final _kelasAsalController = TextEditingController();
   final _kelasTujuanController = TextEditingController();
   bool _isSubmitting = false;
-<<<<<<< HEAD
   bool _isKelulusanMode = false; // Penanda mode kelulusan
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
   Future<void> _prosesKenaikanKelas() async {
     if (_kelasAsalController.text.isEmpty || _kelasTujuanController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-<<<<<<< HEAD
         const SnackBar(content: Text("Isi kelas asal dan kelas tujuan/status kelulusan!")),
-=======
-        const SnackBar(content: Text("Isi kelas asal dan kelas tujuan!")),
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
       );
       return;
     }
@@ -50,14 +43,11 @@ class _KenaikanKelasScreenState extends State<KenaikanKelasScreen> {
         );
         _kelasAsalController.clear();
         _kelasTujuanController.clear();
-<<<<<<< HEAD
         setState(() => _isKelulusanMode = false);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(res['message'] ?? "Terjadi kesalahan")),
         );
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -72,11 +62,7 @@ class _KenaikanKelasScreenState extends State<KenaikanKelasScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-<<<<<<< HEAD
         title: const Text("Form Kenaikan & Kelulusan Kelas"),
-=======
-        title: const Text("Form Kenaikan Kelas"),
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
         backgroundColor: Colors.green[800],
         foregroundColor: Colors.white,
       ),
@@ -86,37 +72,24 @@ class _KenaikanKelasScreenState extends State<KenaikanKelasScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-<<<<<<< HEAD
               "Proses Kenaikan / Kelulusan Siswa",
-=======
-              "Proses Kenaikan Kelas Siswa",
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
-<<<<<<< HEAD
               "Fitur ini akan mengubah semua siswa dari kelas asal ke kelas tujuan atau meluluskan siswa secara bersamaan.",
-=======
-              "Fitur ini akan mengubah semua siswa dari kelas asal ke kelas tujuan secara bersamaan.",
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: _kelasAsalController,
               decoration: const InputDecoration(
-<<<<<<< HEAD
                 labelText: "Kelas Asal (Contoh: 6A atau 5A)",
-=======
-                labelText: "Kelas Asal (Contoh: 4A)",
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.class_outlined),
               ),
             ),
             const SizedBox(height: 15),
-<<<<<<< HEAD
             
             // Switch untuk mengubah mode ke Kelulusan
             SwitchListTile(
@@ -146,14 +119,6 @@ class _KenaikanKelasScreenState extends State<KenaikanKelasScreen> {
                 prefixIcon: const Icon(Icons.school),
                 filled: _isKelulusanMode,
                 fillColor: _isKelulusanMode ? Colors.grey[200] : null,
-=======
-            TextField(
-              controller: _kelasTujuanController,
-              decoration: const InputDecoration(
-                labelText: "Kelas Tujuan (Contoh: 5A)",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.school),
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               ),
             ),
             const SizedBox(height: 25),
@@ -165,15 +130,9 @@ class _KenaikanKelasScreenState extends State<KenaikanKelasScreen> {
                 onPressed: _isSubmitting ? null : _prosesKenaikanKelas,
                 child: _isSubmitting
                     ? const CircularProgressIndicator(color: Colors.white)
-<<<<<<< HEAD
                     : Text(
                         _isKelulusanMode ? "PROSES Kelulusan SISWA" : "PROSES KENAIKAN KELAS",
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-=======
-                    : const Text(
-                        "PROSES KENAIKAN KELAS",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                       ),
               ),
             )

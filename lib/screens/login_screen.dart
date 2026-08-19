@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan package ini untuk menyimpan sesi admin
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 import '../config.dart';
 import '../services/fcm_service.dart';
 import 'dashboard_screen.dart';
@@ -29,14 +26,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-<<<<<<< HEAD
     final usernameInput = _usernameController.text.trim();
     final passwordInput = _passwordController.text.trim();
 
     if (usernameInput.isEmpty || passwordInput.isEmpty) {
-=======
-    if (_usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Username dan Password tidak boleh kosong!")),
       );
@@ -46,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-<<<<<<< HEAD
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       // 1. CEK LOGIN KHUSUS AKUN ADMIN
@@ -79,34 +71,18 @@ class _LoginScreenState extends State<LoginScreen> {
           "${AppConfig.apiUrl}?action=login&username=${Uri.encodeComponent(usernameInput)}&password=${Uri.encodeComponent(passwordInput)}&id_lembaga=${AppConfig.idLembaga}"
         ),
       );
-=======
-      // 1. HTTP Request Login dengan menyertakan id_lembaga
-      final response = await http.get(
-          Uri.parse(
-            "${AppConfig.apiUrl}?action=login&username=${Uri.encodeComponent(_usernameController.text.trim())}&password=${Uri.encodeComponent(_passwordController.text.trim())}&id_lembaga=${AppConfig.idLembaga}"
-          ),
-        );
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
       final result = json.decode(response.body);
 
       if (result['status'] == 'success') {
         var userData = result['data'];
 
-<<<<<<< HEAD
         // Kirim FCM Token
-=======
-        // 2. Kirim FCM Token
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
         FcmService.updateFcmToken(userData['id']);
 
         if (!mounted) return;
         
-<<<<<<< HEAD
         // Masuk ke Dashboard
-=======
-        // 3. Masuk ke Dashboard
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => DashboardScreen(userData: userData)),

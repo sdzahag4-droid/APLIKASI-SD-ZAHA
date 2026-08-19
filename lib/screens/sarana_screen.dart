@@ -10,11 +10,7 @@ class SaranaScreen extends StatefulWidget {
 }
 
 class _SaranaScreenState extends State<SaranaScreen> {
-<<<<<<< HEAD
   // Data Inventaris Sarana (Dapat ditambah atau dihapus oleh admin)
-=======
-  // Data Inventaris Sarana (Dapat ditambah manual oleh admin)
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   final List<Map<String, String>> _saranaList = [
     {'nama': 'Gedung Utama', 'kondisi': 'Baik', 'jumlah': '3 Lantai'},
     {'nama': 'Laboratorium Komputer', 'kondisi': 'Baik', 'jumlah': '20 Unit'},
@@ -23,7 +19,6 @@ class _SaranaScreenState extends State<SaranaScreen> {
     {'nama': 'Ruang UKS', 'kondisi': 'Baik', 'jumlah': '1 Ruang'},
   ];
 
-<<<<<<< HEAD
   // Fungsi Dialog Konfirmasi Hapus Data Sarana (Khusus Admin)
   void _hapusSarana(int index) {
     showDialog(
@@ -57,8 +52,6 @@ class _SaranaScreenState extends State<SaranaScreen> {
     );
   }
 
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   // Fungsi Dialog Input Sarana Baru khusus Admin
   void _showAddSaranaDialog() {
     final TextEditingController namaController = TextEditingController();
@@ -135,7 +128,6 @@ class _SaranaScreenState extends State<SaranaScreen> {
             ),
             title: Text(item['nama']!, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text("Kondisi: ${item['kondisi']}"),
-<<<<<<< HEAD
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -155,11 +147,6 @@ class _SaranaScreenState extends State<SaranaScreen> {
                   ),
                 ],
               ],
-=======
-            trailing: Chip(
-              label: Text(item['jumlah']!, style: const TextStyle(fontSize: 12)),
-              backgroundColor: Colors.teal[50],
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
             ),
           );
         },

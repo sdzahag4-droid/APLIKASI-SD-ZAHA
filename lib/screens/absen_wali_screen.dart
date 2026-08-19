@@ -14,18 +14,10 @@ class AbsenWaliScreen extends StatefulWidget {
 }
 
 class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
-<<<<<<< HEAD
-=======
-  // Local state untuk menyimpan data user yang aktif (agar foto terbarui secara realtime)
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   late Map<String, dynamic> currentUser;
   bool _isUploading = false;
   final ImagePicker _picker = ImagePicker();
 
-<<<<<<< HEAD
-=======
-  // Mockup data statistik (Dapat dihubungkan ke API/Apps Script nanti)
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   int totalSiswa = 28;
   int totalHadir = 25;
   int totalIzin = 2;
@@ -37,13 +29,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     currentUser = Map<String, dynamic>.from(widget.userData);
   }
 
-<<<<<<< HEAD
-=======
-  // ==========================================
-  // FITUR UPLOAD FOTO PROFIL (KAMERA & GALERI)
-  // ==========================================
-  
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   void _pickAndUploadImage() {
     showModalBottomSheet(
       context: context,
@@ -96,19 +81,11 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         _isUploading = true;
       });
 
-<<<<<<< HEAD
-=======
-      // Konversi gambar menjadi Base64
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
       List<int> imageBytes = await pickedFile.readAsBytes();
       String base64Image = base64Encode(imageBytes);
 
       String username = currentUser['username'] ?? currentUser['nama'] ?? '';
 
-<<<<<<< HEAD
-=======
-      // Kirim data ke Google Apps Script (Code.gs)
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
       final response = await http.post(
         Uri.parse(AppConfig.apiUrl),
         headers: {'Content-Type': 'application/json'},
@@ -151,10 +128,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     }
   }
 
-<<<<<<< HEAD
-=======
-  // WIDGET AVATAR DENGAN IKON KAMERA EDIT FOTO
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   Widget _buildProfileAvatarWithEdit(String nama, String? photoUrl) {
     bool hasPhoto = photoUrl != null && photoUrl.trim().isNotEmpty;
 
@@ -201,10 +174,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                     : null),
           ),
         ),
-<<<<<<< HEAD
-=======
-        // Tombol Ikon Kamera kecil di pojok kanan bawah foto
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
         Positioned(
           bottom: 0,
           right: 0,
@@ -228,146 +197,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-<<<<<<< HEAD
-=======
-  // ==========================================
-  // HELPER FUNCTIONS (MODAL & DIALOG)
-  // ==========================================
-
-  void _showFormAbsensi(BuildContext context, String kelas) {
-    String? selectedSiswa;
-    String status = "Hadir";
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Input Absensi Kelas $kelas",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(ctx),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: "Pilih Nama Siswa",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                          value: "Ahmad Rizky", child: Text("Ahmad Rizky")),
-                      DropdownMenuItem(
-                          value: "Budi Santoso", child: Text("Budi Santoso")),
-                      DropdownMenuItem(
-                          value: "Siti Fatimah", child: Text("Siti Fatimah")),
-                    ],
-                    onChanged: (val) {
-                      setModalState(() {
-                        selectedSiswa = val;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: "Status Kehadiran",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.fact_check),
-                    ),
-                    value: status,
-                    items: const [
-                      DropdownMenuItem(value: "Hadir", child: Text("Hadir")),
-                      DropdownMenuItem(value: "Izin", child: Text("Izin")),
-                      DropdownMenuItem(value: "Sakit", child: Text("Sakit")),
-                      DropdownMenuItem(value: "Alpha", child: Text("Alpha")),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) {
-                        setModalState(() {
-                          status = val;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        if (selectedSiswa == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Silakan pilih nama siswa!'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                          return;
-                        }
-
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                "Absensi $selectedSiswa ($status) berhasil disimpan!"),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "SIMPAN & KIRIM NOTIFIKASI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   void _showFeatureDialog(
       BuildContext context, String title, String description) {
     showDialog(
@@ -396,13 +225,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-<<<<<<< HEAD
-=======
-  // ==========================================
-  // BUILD METHOD UTAMA
-  // ==========================================
-
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   @override
   Widget build(BuildContext context) {
     String namaGuru = currentUser['nama'] ?? 'Irawati, S.Pd.I.';
@@ -412,11 +234,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-<<<<<<< HEAD
         title: const Text('Dashboard Absensi Siswa'),
-=======
-        title: const Text('Dashboard Wali Kelas'),
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
         backgroundColor: const Color(0xFF1E293B),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -426,10 +244,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-<<<<<<< HEAD
-=======
-            // 1. BANNER / HEADER PROFIL WALI KELAS DENGAN EDIT FOTO PROFIL
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -451,10 +265,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-<<<<<<< HEAD
-=======
-                  // Sisi Kiri: Teks Informasi
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -502,14 +312,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                       ],
                     ),
                   ),
-<<<<<<< HEAD
                   const SizedBox(width: 12),
-=======
-
-                  const SizedBox(width: 12),
-
-                  // Sisi Kanan: Avatar Foto Profil + Tombol Edit Kamera
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                   _buildProfileAvatarWithEdit(namaGuru, photoUrl),
                 ],
               ),
@@ -517,10 +320,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 
             const SizedBox(height: 20),
 
-<<<<<<< HEAD
-=======
-            // 2. STATISTIK KEHADIRAN RINGKAS
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
             const Text(
               "Ringkasan Kehadiran Hari Ini",
               style: TextStyle(
@@ -577,10 +376,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 
             const SizedBox(height: 24),
 
-<<<<<<< HEAD
-=======
-            // 3. MENU UTAMA WALI KELAS
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
             const Text(
               "Menu Kelas",
               style: TextStyle(
@@ -594,7 +389,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
             _buildMenuItem(
               context,
               icon: Icons.assignment_turned_in,
-<<<<<<< HEAD
               title: "Input Absensi Cepat",
               subtitle: "Input dan catat kehadiran harian secara ringkas",
               color: const Color(0xFF2563EB),
@@ -606,13 +400,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                     builder: (context) => AbsensiSiswaScreen(userData: currentUser),
                   ),
                 );
-=======
-              title: "Absensi Siswa",
-              subtitle: "Input dan catat kehadiran harian siswa",
-              color: const Color(0xFF2563EB),
-              onTap: () {
-                _showFormAbsensi(context, kelas);
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               },
             ),
 
@@ -648,24 +435,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 
             _buildMenuItem(
               context,
-<<<<<<< HEAD
-=======
-              icon: Icons.rate_review,
-              title: "Catatan Wali Kelas",
-              subtitle: "Catatan perkembangan dan perilaku siswa",
-              color: const Color(0xFFD97706),
-              onTap: () {
-                _showFeatureDialog(
-                  context,
-                  "Catatan Wali Kelas",
-                  "Fitur untuk mencatat jurnal perkembangan karakter, prestasi, maupun kedisiplinan siswa.",
-                );
-              },
-            ),
-
-            _buildMenuItem(
-              context,
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               icon: Icons.description,
               title: "Laporan",
               subtitle: "Cetak dan ekspor laporan kelas",
@@ -684,10 +453,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-<<<<<<< HEAD
-=======
-  // Widget Kartu Statistik
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   Widget _buildStatCard({
     required IconData icon,
     required String label,
@@ -734,10 +499,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-<<<<<<< HEAD
-=======
-  // Widget List Item Menu
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   Widget _buildMenuItem(
     BuildContext context, {
     required IconData icon,
@@ -776,7 +537,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
       ),
     );
   }
-<<<<<<< HEAD
 }
 
 // ==========================================
@@ -884,6 +644,4 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
       ),
     );
   }
-=======
->>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 }
