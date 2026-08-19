@@ -39,7 +39,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
     setState(() { _isLoading = true; });
     try {
       final response = await http.post(
-        Uri.parse(config.url), // Diperbaiki menggunakan config.url
+        config.AppConfig.apiUrl
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"action": "get_tunggakan"}),
       );
@@ -74,7 +74,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
       setState(() { _isLoading = true; });
       try {
         final response = await http.post(
-          Uri.parse(config.url), // Diperbaiki menggunakan config.url
+          config.AppConfig.apiUrl
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
             "action": "upload_tunggakan",
@@ -116,7 +116,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
       setState(() { _isLoading = true; });
       try {
         final response = await http.post(
-          Uri.parse(config.url), // Diperbaiki menggunakan config.url
+          config.AppConfig.apiUrl
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
             "action": "hapus_tunggakan",
