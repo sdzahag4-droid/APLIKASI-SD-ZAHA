@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
 class JadwalScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -12,11 +15,18 @@ class JadwalScreen extends StatefulWidget {
 
 class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+<<<<<<< HEAD
   bool isAdmin = false;
 
   final List<String> _days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Minggu', 'Sabtu'];
 
   // Data Jadwal (Bisa ditambah/dihapus oleh admin)
+=======
+
+  final List<String> _days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Minggu', 'Sabtu'];
+
+  // Data Jadwal (Bisa ditambah manual oleh admin)
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   final Map<String, List<Map<String, String>>> _jadwalData = {
     'Senin': [
       {'jam': '07.30 - 08.15', 'mapel': 'Upacara Bendera / Pend. Agama', 'guru': 'Tim Guru'},
@@ -48,6 +58,7 @@ class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
     _tabController = TabController(length: _days.length, vsync: this);
+<<<<<<< HEAD
     _cekStatusAdmin();
   }
 
@@ -60,11 +71,17 @@ class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderSt
     setState(() {
       isAdmin = adminPref || roleAdmin;
     });
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   }
 
   // Fungsi untuk menampilkan Dialog Input Jadwal Manual oleh Admin
   void _showAddJadwalDialog() {
+<<<<<<< HEAD
     String selectedDay = _days[_tabController.index];
+=======
+    String selectedDay = _days[0];
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     final TextEditingController jamController = TextEditingController();
     final TextEditingController mapelController = TextEditingController();
     final TextEditingController guruController = TextEditingController();
@@ -122,6 +139,7 @@ class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderSt
     );
   }
 
+<<<<<<< HEAD
   // Fungsi untuk Menghapus Jadwal (Khusus Admin)
   void _hapusJadwal(String day, int index) {
     showDialog(
@@ -154,6 +172,14 @@ class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+=======
+  @override
+  Widget build(BuildContext context) {
+    // Cek apakah user yang login adalah Admin atau berhak menginput
+    String role = widget.userData['role'] ?? '';
+    bool isAdmin = role.toLowerCase().contains('admin');
+
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     return Scaffold(
       appBar: AppBar(
         title: const Text('Jadwal Kegiatan & Pelajaran', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -189,6 +215,7 @@ class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderSt
                     child: Text('${index + 1}', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[900])),
                   ),
                   title: Text(item['mapel']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+<<<<<<< HEAD
                   subtitle: Text("Pengajar: ${item['guru']}\nJam: ${item['jam']}"),
                   isThreeLine: true,
                   // Jika admin, tampilkan tombol hapus di sebelah kanan (trailing). Jika bukan, tampilkan jam pelajaran biasa.
@@ -199,6 +226,10 @@ class _JadwalScreenState extends State<JadwalScreen> with SingleTickerProviderSt
                           tooltip: 'Hapus Jadwal',
                         )
                       : Text(item['jam']!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+=======
+                  subtitle: Text("Pengajar: ${item['guru']}"),
+                  trailing: Text(item['jam']!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                 ),
               );
             },

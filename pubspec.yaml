@@ -16,12 +16,16 @@ dependencies:
   image_picker: ^1.2.3
   google_fonts: ^8.2.1
   font_awesome_flutter: ^10.7.0 # Ditambahkan untuk ikon TikTok, Twitter, Facebook, dll.
+<<<<<<< HEAD
   shared_preferences: ^2.5.5
   geolocator: ^12.0.0
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+<<<<<<< HEAD
   flutter_launcher_icons: "^0.14.3"
 
 flutter:
@@ -34,3 +38,10 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/icon.png"
+=======
+
+flutter:
+  assets:
+    - shorebird.yaml
+  uses-material-design: true
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a

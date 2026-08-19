@@ -5,7 +5,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import '../config.dart';
+<<<<<<< HEAD
 import 'absensi_screen.dart';
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 import 'login_screen.dart';
 import 'profil_pegawai_screen.dart';
 import 'informasi_screen.dart';
@@ -16,7 +19,10 @@ import 'pembayaran_screen.dart';
 import 'jadwal_screen.dart';
 import 'agenda_screen.dart';
 import 'sarana_screen.dart';
+<<<<<<< HEAD
 import 'tunggakan_screen.dart';
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -31,6 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? _photoUrl;
   bool _isUploadingPhoto = false;
 
+<<<<<<< HEAD
 Future<void> _openUrl(String urlString) async {
   final Uri url = Uri.parse(urlString);
   if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
@@ -97,6 +104,13 @@ Future<void> _openUrl(String urlString) async {
         ],
       ),
     );
+=======
+  void _openUrl(String url) async {
+    Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   }
 
   // LOGOUT DENGAN DIALOG KONFIRMASI
@@ -436,6 +450,7 @@ Future<void> _openUrl(String urlString) async {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               children: [
+<<<<<<< HEAD
                 _buildMenuTile(
                 context,
                 Icons.how_to_reg,
@@ -451,6 +466,9 @@ Future<void> _openUrl(String urlString) async {
                 },
               ),
                 if (role == 'Guru Kelas')
+=======
+                if (role == 'Guru')
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                   _buildMenuTile(
                     context,
                     Icons.how_to_reg,
@@ -530,7 +548,11 @@ Future<void> _openUrl(String urlString) async {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+<<<<<<< HEAD
                         builder: (context) => TunggakanScreen(userData: widget.userData),
+=======
+                        builder: (c) => PembayaranScreen(userData: widget.userData),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                       ),
                     );
                   },
@@ -564,8 +586,13 @@ Future<void> _openUrl(String urlString) async {
                   "Sosial Media",
                   Colors.pink,
                   () {
+<<<<<<< HEAD
                     _showSocialMediaDialog(context);
                   }
+=======
+                    _openUrl(AppConfig.instagramUrl);
+                  },
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                 ),
                 _buildMenuTile(
                   context,

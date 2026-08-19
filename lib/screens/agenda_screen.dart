@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
 class AgendaScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -11,9 +14,13 @@ class AgendaScreen extends StatefulWidget {
 }
 
 class _AgendaScreenState extends State<AgendaScreen> {
+<<<<<<< HEAD
   bool isAdmin = false;
 
   // Data Agenda Sekolah (Dapat ditambah dan dihapus oleh admin)
+=======
+  // Data Agenda Sekolah (Dapat ditambah manual oleh admin)
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   final List<Map<String, String>> _agendaList = [
     {
       'tanggal': '17 Agustus 2026',
@@ -45,6 +52,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
     },
   ];
 
+<<<<<<< HEAD
   @override
   void initState() {
     super.initState();
@@ -62,6 +70,8 @@ class _AgendaScreenState extends State<AgendaScreen> {
     });
   }
 
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   // Fungsi untuk menampilkan Dialog Input Agenda oleh Admin
   void _showAddAgendaDialog() {
     final TextEditingController tanggalController = TextEditingController();
@@ -119,6 +129,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
     );
   }
 
+<<<<<<< HEAD
   // Fungsi untuk Menghapus Agenda (Khusus Admin)
   void _hapusAgenda(int index) {
     showDialog(
@@ -151,12 +162,21 @@ class _AgendaScreenState extends State<AgendaScreen> {
 
   @override
   Widget build(BuildContext context) {
+=======
+  @override
+  Widget build(BuildContext context) {
+    // Cek apakah user yang login adalah Admin
+    String role = widget.userData['role'] ?? '';
+    bool isAdmin = role.toLowerCase().contains('admin');
+
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agenda Kegiatan Sekolah', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Colors.purple[800],
         foregroundColor: Colors.white,
       ),
+<<<<<<< HEAD
       body: _agendaList.isEmpty
           ? const Center(child: Text('Belum ada agenda kegiatan.', style: TextStyle(color: Colors.grey)))
           : ListView.builder(
@@ -231,6 +251,72 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 );
               },
             ),
+=======
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _agendaList.length,
+        itemBuilder: (context, index) {
+          var item = _agendaList[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 14),
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.purple[50],
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          item['kategori']!,
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.purple[800]),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                          const SizedBox(width: 4),
+                          Text(item['tanggal']!, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    item['judul']!,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(item['waktu']!, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(item['lokasi']!, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
       // Tombol Tambah Agenda hanya muncul jika yang login adalah Admin
       floatingActionButton: isAdmin
           ? FloatingActionButton.extended(

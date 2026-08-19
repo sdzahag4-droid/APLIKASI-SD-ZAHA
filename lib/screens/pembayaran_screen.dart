@@ -63,6 +63,7 @@ class _PembayaranScreenState extends State<PembayaranScreen> with SingleTickerPr
     super.dispose();
   }
 
+<<<<<<< HEAD
   // Fungsi Dialog Hapus Tagihan Khusus Admin
   void _hapusTagihan(int index) {
     showDialog(
@@ -93,6 +94,8 @@ class _PembayaranScreenState extends State<PembayaranScreen> with SingleTickerPr
     );
   }
 
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   // Fungsi Dialog Input Tagihan Baru khusus Admin
   void _showAddTagihanDialog() {
     final TextEditingController jenisController = TextEditingController();
@@ -326,7 +329,11 @@ class _PembayaranScreenState extends State<PembayaranScreen> with SingleTickerPr
             child: TabBarView(
               controller: _tabController,
               children: [
+<<<<<<< HEAD
                 _buildTagihanTab(isAdmin),
+=======
+                _buildTagihanTab(),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                 _buildRiwayatTab(),
                 _buildRekeningTab(),
               ],
@@ -348,7 +355,11 @@ class _PembayaranScreenState extends State<PembayaranScreen> with SingleTickerPr
   }
 
   // TAB 1: LIST TAGIHAN
+<<<<<<< HEAD
   Widget _buildTagihanTab(bool isAdmin) {
+=======
+  Widget _buildTagihanTab() {
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     if (_tagihanList.isEmpty) {
       return const Center(
         child: Column(
@@ -379,6 +390,7 @@ class _PembayaranScreenState extends State<PembayaranScreen> with SingleTickerPr
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(item['id'], style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold)),
+<<<<<<< HEAD
                     Row(
                       children: [
                         Container(
@@ -401,6 +413,15 @@ class _PembayaranScreenState extends State<PembayaranScreen> with SingleTickerPr
                           ),
                         ],
                       ],
+=======
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(item['status'], style: const TextStyle(fontSize: 11, color: Colors.red, fontWeight: FontWeight.bold)),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
                     ),
                   ],
                 ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 import '../config.dart';
 
 class PsbScreen extends StatefulWidget {
@@ -14,7 +17,10 @@ class PsbScreen extends StatefulWidget {
 class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();
+<<<<<<< HEAD
   bool isAdmin = false;
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 
   // Form Controllers
   final TextEditingController _namaSiswaController = TextEditingController();
@@ -52,6 +58,7 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+<<<<<<< HEAD
     _cekStatusAdmin();
   }
 
@@ -64,6 +71,8 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
     setState(() {
       isAdmin = adminPref || roleAdmin;
     });
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
   }
 
   @override
@@ -114,6 +123,7 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
     }
   }
 
+<<<<<<< HEAD
   // Fungsi untuk Menghapus Data Pendaftar (Khusus Admin)
   void _hapusPendaftar(int index) {
     showDialog(
@@ -151,6 +161,10 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
     int diterimaCount = _daftarPendaftar.where((e) => e['status'] == 'Diterima').length;
     int pendingCount = _daftarPendaftar.where((e) => e['status'] == 'Pending').length;
 
+=======
+  @override
+  Widget build(BuildContext context) {
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -181,9 +195,15 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+<<<<<<< HEAD
                 _buildStatCard("Total Pendaftar", "$totalPendaftar", Colors.blue),
                 _buildStatCard("Diterima", "$diterimaCount", Colors.green),
                 _buildStatCard("Pending", "$pendingCount", Colors.orange),
+=======
+                _buildStatCard("Total Pendaftar", "${_daftarPendaftar.length}", Colors.blue),
+                _buildStatCard("Diterima", "1", Colors.green),
+                _buildStatCard("Pending", "1", Colors.orange),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
               ],
             ),
           ),
@@ -317,10 +337,13 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
 
   // TAB 2: DAFTAR PENDAFTAR
   Widget _buildDataPendaftarList() {
+<<<<<<< HEAD
     if (_daftarPendaftar.isEmpty) {
       return const Center(child: Text("Belum ada data pendaftar.", style: TextStyle(color: Colors.grey)));
     }
 
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _daftarPendaftar.length,
@@ -337,6 +360,7 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
             ),
             title: Text(data['nama'], style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text("No. Reg: ${data['no_reg']} • Wali: ${data['wali']}\nTanggal: ${data['tanggal']}"),
+<<<<<<< HEAD
             isThreeLine: true,
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -358,6 +382,15 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
                   ),
                 ],
               ],
+=======
+            trailing: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isDiterima ? Colors.green : Colors.orange,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(data['status'], style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
             ),
           ),
         );
@@ -375,7 +408,11 @@ class _PsbScreenState extends State<PsbScreen> with SingleTickerProviderStateMix
             child: ListTile(
               leading: Icon(Icons.format_list_numbered, color: Colors.blue),
               title: Text("Alur Pendaftaran", style: TextStyle(fontWeight: FontWeight.bold)),
+<<<<<<< HEAD
               subtitle: Text("1. Isi Formulir Online\n2. Verifikasi Berkas oleh Panitia\n3.Pengumuman Kelulusan"),
+=======
+              subtitle: Text("1. Isi Formulir Online\n2. Verifikasi Berkas oleh Panitia\n3. Observasi Calon Siswa\n4. Pengumuman Kelulusan"),
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
             ),
           ),
           SizedBox(height: 8),

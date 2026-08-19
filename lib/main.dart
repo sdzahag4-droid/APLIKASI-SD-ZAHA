@@ -31,8 +31,13 @@ class SDZAHAApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
+<<<<<<< HEAD
           seedColor: const Color(0xFFFFD700),
           primary: const Color(0xFFFFD700),
+=======
+          seedColor: Colors.green,
+          primary: Colors.green,
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
         ),
         useMaterial3: true,
         // DENGAN FALLBACK FONT UNTUK MENGHILANGKAN WARNING NOTO FONT DI WEB

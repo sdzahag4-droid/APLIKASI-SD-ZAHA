@@ -43,6 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+<<<<<<< HEAD
 
 # ==========================================
 # TAMBAHAN PERBAIKAN PENTING (AGAR TIDAK MACET)
@@ -50,3 +51,5 @@ app.*.map.json
 /android/.gradle/
 /android/app/build/
 /android/build/
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a

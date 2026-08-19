@@ -14,6 +14,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+<<<<<<< HEAD
     // Perbaikan: Konfigurasi Kotlin dipindahkan ke dalam blok android menggunakan compilerOptions
     kotlin {
         compilerOptions {
@@ -21,6 +22,8 @@ android {
         }
     }
 
+=======
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.aplikasi_sd_zaha"
@@ -41,6 +44,15 @@ android {
     }
 }
 
+<<<<<<< HEAD
+=======
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
 flutter {
     source = "../.."
 }

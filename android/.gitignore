@@ -13,5 +13,9 @@ key.properties
 **/*.keystore
 **/*.jks
 /build/
+<<<<<<< HEAD
 .dart_tool/
 android/.gradle/
+=======
+/android/app/build/
+>>>>>>> 11d11ec4b4b1ddcf8b2dcfa724c7cbbbad9f7c0a
