@@ -39,7 +39,7 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
     setState(() { _isLoading = true; });
     try {
       final response = await http.post(
-        config.AppConfig.apiUrl
+        Uri.parse(config.AppConfig.apiUrl),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"action": "get_tunggakan"}),
       );
@@ -74,9 +74,9 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
       setState(() { _isLoading = true; });
       try {
         final response = await http.post(
-          config.AppConfig.apiUrl
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
+        Uri.parse(config.AppConfig.apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
             "action": "upload_tunggakan",
             "filename": fileName,
             "filedata": base64File,
@@ -116,18 +116,18 @@ class _TunggakanScreenState extends State<TunggakanScreen> {
       setState(() { _isLoading = true; });
       try {
         final response = await http.post(
-          config.AppConfig.apiUrl
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "action": "hapus_tunggakan",
-            "id": idUnik, // ID unik baris data di spreadsheet
-          }),
-        );
+        Uri.parse(config.AppConfig.apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "action": "hapus_tunggakan",
+          "id": idUnik,
+        }),
+      );
 
         if (response.statusCode == 200) {
           final res = jsonDecode(response.body);
           scaffoldMessengerShow(context, res['message'] ?? 'Berhasil dihapus');
-          _loadTunggakanDataFromBackend(); // Refresh data
+          _loadTunggakanDataFromBackend();
         }
       } catch (e) {
         scaffoldMessengerShow(context, 'Gagal menghapus: $e');
