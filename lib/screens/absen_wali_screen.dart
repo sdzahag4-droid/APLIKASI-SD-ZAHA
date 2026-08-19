@@ -88,7 +88,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 
       final response = await http.post(
         Uri.parse(AppConfig.apiUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
         body: jsonEncode({
           'action': 'uploadFoto',
           'username': username,
@@ -393,7 +393,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
               subtitle: "Input dan catat kehadiran harian secara ringkas",
               color: const Color(0xFF2563EB),
               onTap: () {
-                // Navigasi langsung mengarah ke AbsensiSiswaScreen di bawah
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -540,7 +539,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 }
 
 // ==========================================
-// KELAS TAMBAHAN DI FILE YANG SAMA (TANPA FILE BARU)
+// KELAS TAMBAHAN DI FILE YANG SAMA (DIPERBAIKI)
 // ==========================================
 class AbsensiSiswaScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;
@@ -562,16 +561,31 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
   Future<void> _simpanAbsensi() async {
     setState(() => _isLoading = true);
     try {
-      // Simulasi proses pengiriman data ke server / Apps Script
-      await Future.delayed(const Duration(seconds: 1500)); 
-      
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Absensi siswa berhasil disimpan!"),
-          backgroundColor: Colors.green,
-        ),
+      // Mengirim data absensi ke backend Apps Script
+      final response = await http.post(
+        Uri.parse(AppConfig.apiUrl),
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: jsonEncode({
+          'action': 'simpanAbsensiSiswa',
+          'kelas': widget.userData?['kelas'] ?? '5A',
+          'waliKelas': widget.userData?['nama'] ?? '',
+          'dataSiswa': daftarSiswa,
+        }),
       );
+
+      final result = jsonDecode(response.body);
+
+      if (result['status'] == 'success') {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Absensi siswa berhasil disimpan!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        throw Exception(result['message'] ?? "Gagal menyimpan ke server.");
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -636,7 +650,14 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
               ),
               onPressed: _isLoading ? null : _simpanAbsensi,
               child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : const Text("Simpan & Kirim Absensi", style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
