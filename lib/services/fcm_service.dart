@@ -1,0 +1,1 @@
+export 'fcm_stub.dart' if (dart.library.io) 'fcm_mobile.dart';
