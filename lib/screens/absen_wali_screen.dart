@@ -48,7 +48,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
       if (result['status'] == 'success') {
         List dataSiswa = result['data'] ?? [];
         
-        // Hitung statistik secara dinamis dari data API
         int hadir = 0;
         int izin = 0;
         int alpa = 0;
@@ -66,13 +65,13 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 
         setState(() {
           totalSiswa = dataSiswa.length;
-          totalHadir = hadir > 0 ? hadir : dataSiswa.length; // Default hadir jika belum absen
+          totalHadir = hadir > 0 ? hadir : dataSiswa.length;
           totalIzin = izin;
           totalAlpa = alpa;
         });
       }
     } catch (e) {
-      // Jika gagal, biarkan nilai default atau tangani error senyap
+      // Tangani error senyap jika gagal
     } finally {
       if (mounted) setState(() => _isLoadingSummary = false);
     }
@@ -454,7 +453,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                   MaterialPageRoute(
                     builder: (context) => AbsensiSiswaScreen(userData: currentUser),
                   ),
-                ).then((_) => _fetchRingkasanAbsen()); // Refresh ringkasan setelah kembali
+                ).then((_) => _fetchRingkasanAbsen());
               },
             ),
 
@@ -634,6 +633,7 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
         setState(() {
           daftarSisamDinamic = rawData.map<Map<String, dynamic>>((item) {
             return {
+              "id_user": item['id_user'] ?? item['nis'] ?? '-',
               "nis": item['nis'] ?? item['username'] ?? '-',
               "nama": item['nama'] ?? item['Nama'] ?? 'Tanpa Nama',
               "status": item['status'] ?? 'Hadir',
@@ -653,20 +653,24 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
     }
   }
 
-Future<void> _simpanAbsensi() async {
+  Future<void> _simpanAbsensi() async {
     setState(() => _isSaving = true);
     try {
+      String kelas = widget.userData?['kelas'] ?? '5A';
+      String namaWaliKelas = widget.userData?['nama'] ?? '';
+      String idLembaga = widget.userData?['id_lembaga'] ?? '';
+
       final response = await http.post(
-        Uri.parse(iUrl),
+        Uri.parse(AppConfig.apiUrl),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "action": "simpanAbsensiSiswa",
           "kelas": kelas,
           "wali_kelas": namaWaliKelas,
           "id_lembaga": idLembaga,
-          "siswa": listSiswa.map((s) => {
-            "id_siswa": s['id_user'] ?? s['id_siswa'],
-            "nama_siswa": s['nama'] ?? s['nama_siswa'],
+          "siswa": daftarSisamDinamic.map((s) => {
+            "id_siswa": s['id_user'] ?? s['nis'],
+            "nama_siswa": s['nama'],
             "status": s['status']
           }).toList()
         }),
@@ -676,15 +680,25 @@ Future<void> _simpanAbsensi() async {
       if (result['status'] == 'success') {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Absensi berhasil disimpan!')),
+          const SnackBar(
+            content: Text('Absensi berhasil disimpan!'),
+            backgroundColor: Colors.green,
+          ),
         );
+        Navigator.pop(context);
+      } else {
+        throw Exception(result['message'] ?? 'Gagal menyimpan absensi');
       }
     } catch (e) {
-      print("Error simpan absensi: $e");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error simpan absensi: $e"), backgroundColor: Colors.red),
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     String kelas = widget.userData?['kelas'] ?? '5A';
