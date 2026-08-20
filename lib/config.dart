@@ -7,7 +7,7 @@ class AppConfig {
   static const String idLembaga = "SD1";
 
   // URL Web App Google Apps Script
-static const String apiUrl = "https://script.google.com/macros/s/AKfycbzj9nsEu2t3nm3iib7lfW40wk3Bq46ngSmaXIwhwemBz9nfWT9iscVoBFXA07fKG70J/exec";
+  static const String apiUrl = "https://script.google.com/macros/s/AKfycbzj9nsEu2t3nm3iib7lfW40wk3Bq46ngSmaXIwhwemBz9nfWT9iscVoBFXA07fKG70J/exec";
 
   // Kontak & Sosial Media
   static const String whatsappAdmin = "6285792518395";
@@ -18,3 +18,7 @@ static const String apiUrl = "https://script.google.com/macros/s/AKfycbzj9nsEu2t
   static const String twitterUrl = "https://x.com/sdzahag4";
   static const String facebookUrl = "https://www.facebook.com/profile.php?id=61560695901686"; 
 }
+
+// Tambahkan baris di bawah ini agar variabel dikenali oleh file lain tanpa error
+const String iUrl = AppConfig.apiUrl;
+const String idLembaga = AppConfig.idLembaga;
