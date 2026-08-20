@@ -426,24 +426,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               children: [
-                if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
-              _buildMenuTile(
-                context,
-                Icons.people,
-                "Data Siswa",
-                Colors.blueAccent,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DataSiswaScreen(kelas: widget.userData['kelas'] ?? '1A'),
-                    ),
-                  );
-                },
-              ),
-              // Tambahkan menu Wali Kelas / Rekap Kelas di sini jika ingin disembunyikan juga dari siswa
-            ],
-                if (widget.userData['role'] == 'Guru Kelas' || widget.userData['jabatan'] == 'Wali Kelas')
+              if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
+                _buildMenuTile(
+                  context,
+                  Icons.people,
+                  "Data Siswa",
+                  Colors.blueAccent,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DataSiswaScreen(kelas: widget.userData['kelas'] ?? '1A'),
+                      ),
+                    );
+                  },
+                ),
+                _buildMenuTile(
+                  context,
+                  Icons.school,
+                  "Wali Kelas",
+                  Colors.green,
+                  () {
+                    // Navigasi ke halaman Wali Kelas
+                  },
+                ),
+                _buildMenuTile(
+                  context,
+                  Icons.bar_chart,
+                  "Rekap Kelas",
+                  Colors.teal,
+                  () {
+                    // Navigasi ke halaman Rekap Kelas
+                  },
+                ),
+              ],
                 _buildMenuTile(
                   context,
                   Icons.description,
