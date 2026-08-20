@@ -435,7 +435,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AbsensiScreen(),
+                        builder: (context) => AbsensiScreen(userData: widget.userData),
                       ),
                     );
                   },
