@@ -17,6 +17,9 @@ import 'jadwal_screen.dart';
 import 'agenda_screen.dart';
 import 'sarana_screen.dart';
 import 'tunggakan_screen.dart';
+import 'data_siswa_screen.dart';
+import 'rekap_kelas_screen.dart';
+import 'laporan_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -425,19 +428,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 _buildMenuTile(
                   context,
-                  Icons.how_to_reg,
-                  "Absensi",
-                  Colors.teal,
+                  Icons.people,
+                  "Data Siswa",
+                  Colors.blueAccent,
                   () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AbsensiScreen(userData: widget.userData),
+                        builder: (context) => DataSiswaScreen(kelas: widget.userData['kelas'] ?? '1A'),
                       ),
                     );
                   },
                 ),
                 if (widget.userData['role'] == 'Guru Kelas' || widget.userData['jabatan'] == 'Wali Kelas')
+                _buildMenuTile(
+                  context,
+                  Icons.description,
+                  "Laporan",
+                  Colors.indigo,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LaporanScreen(
+                          kelas: widget.userData['kelas'] ?? '1A',
+                        ),
+                      ),
+                    );
+                  },
+                ),
                 _buildMenuTile(
                   context,
                   Icons.supervisor_account,
@@ -448,6 +467,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => AbsenWaliScreen(userData: widget.userData),
+                      ),
+                    );
+                  },
+                ),
+                _buildMenuTile(
+                  context,
+                  Icons.assessment,
+                  "Rekap Kelas",
+                  Colors.teal,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RekapKelasScreen(
+                          kelas: widget.userData['kelas'] ?? '1A',
+                        ),
                       ),
                     );
                   },

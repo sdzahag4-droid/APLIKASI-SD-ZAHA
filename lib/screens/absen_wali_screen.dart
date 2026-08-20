@@ -464,10 +464,11 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
               subtitle: "Lihat daftar dan profil siswa Kelas $kelas",
               color: const Color(0xFF0D9488),
               onTap: () {
-                _showFeatureDialog(
+                Navigator.push(
                   context,
-                  "Data Siswa Kelas $kelas",
-                  "Fitur untuk melihat data profil siswa, kontak wali murid, dan riwayat siswa Kelas $kelas.",
+                  MaterialPageRoute(
+                    builder: (context) => DataSiswaScreen(kelas: kelas),
+                  ),
                 );
               },
             ),
