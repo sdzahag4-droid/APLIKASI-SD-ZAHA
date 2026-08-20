@@ -660,6 +660,7 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
       String namaWaliKelas = widget.userData?['nama'] ?? '';
       String idLembaga = widget.userData?['id_lembaga'] ?? '';
 
+      print("Data siswa yang dikirim: $daftarSisamDinamic");
       final response = await http.post(
         Uri.parse(AppConfig.apiUrl),
         headers: {"Content-Type": "application/json"},
@@ -669,10 +670,10 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
           "wali_kelas": namaWaliKelas,
           "id_lembaga": idLembaga,
           "siswa": daftarSisamDinamic.map((s) => {
-            "id_siswa": s['id_user'] ?? s['nis'],
-            "nama_siswa": s['nama'],
+            "id_siswa": s['ID_User'] ?? s['id_user'] ?? s['id_siswa'] ?? '-',
+            "nama_siswa": s['nama'] ?? s['Nama'],
             "status": s['status']
-          }).toList()
+          }).toList(),
         }),
       );
 
