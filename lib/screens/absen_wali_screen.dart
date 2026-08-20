@@ -653,49 +653,38 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
     }
   }
 
-  Future<void> _simpanAbsensi() async {
+Future<void> _simpanAbsensi() async {
     setState(() => _isSaving = true);
     try {
       final response = await http.post(
-        Uri.parse(url),
+        Uri.parse(iUrl),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "action": "simpanAbsensiSiswa",
-          "kelas": kelasAktif,
-          "wali_kelas": namaGuru,
+          "kelas": kelas,
+          "wali_kelas": namaWaliKelas,
           "id_lembaga": idLembaga,
           "siswa": listSiswa.map((s) => {
-            "id_siswa": s['id_user'] ?? s['id_siswa'], // pastikan key ini ada
-            "nama_siswa": s['nama'] ?? s['nama_siswa'], // pastikan key ini ada
+            "id_siswa": s['id_user'] ?? s['id_siswa'],
+            "nama_siswa": s['nama'] ?? s['nama_siswa'],
             "status": s['status']
           }).toList()
         }),
       );
 
       final result = jsonDecode(response.body);
-
       if (result['status'] == 'success') {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Absensi siswa berhasil disimpan!"),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text('Absensi berhasil disimpan!')),
         );
-        Navigator.pop(context); // Kembali ke dashboard setelah simpan
-      } else {
-        throw Exception(result['message'] ?? "Gagal menyimpan ke server.");
       }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menyimpan: $e"), backgroundColor: Colors.red),
-      );
+      print("Error simpan absensi: $e");
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     String kelas = widget.userData?['kelas'] ?? '5A';
