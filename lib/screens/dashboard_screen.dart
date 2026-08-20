@@ -426,86 +426,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               children: [
-              if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
-                _buildMenuTile(
-                  context,
-                  Icons.people,
-                  "Data Siswa",
-                  Colors.blueAccent,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DataSiswaScreen(kelas: widget.userData['kelas'] ?? '1A'),
-                      ),
-                    );
-                  },
-                ),
-                _buildMenuTile(
-                  context,
-                  Icons.school,
-                  "Wali Kelas",
-                  Colors.green,
-                  () {
-                    // Navigasi ke halaman Wali Kelas
-                  },
-                ),
-                _buildMenuTile(
-                  context,
-                  Icons.bar_chart,
-                  "Rekap Kelas",
-                  Colors.teal,
-                  () {
-                    // Navigasi ke halaman Rekap Kelas
-                  },
-                ),
-              ],
-                _buildMenuTile(
-                  context,
-                  Icons.description,
-                  "Laporan",
-                  Colors.indigo,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LaporanScreen(
-                          kelas: widget.userData['kelas'] ?? '1A',
+                // Menu Khusus Admin atau Wali Kelas
+                if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
+                  _buildMenuTile(
+                    context,
+                    Icons.people,
+                    "Data Siswa",
+                    Colors.blueAccent,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DataSiswaScreen(kelas: widget.userData['kelas'] ?? '1A'),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                _buildMenuTile(
-                  context,
-                  Icons.supervisor_account,
-                  "Wali Kelas",
-                  Colors.green,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AbsenWaliScreen(userData: widget.userData),
-                      ),
-                    );
-                  },
-                ),
-                _buildMenuTile(
-                  context,
-                  Icons.assessment,
-                  "Rekap Kelas",
-                  Colors.teal,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RekapKelasScreen(
-                          kelas: widget.userData['kelas'] ?? '1A',
+                      );
+                    },
+                  ),
+                  _buildMenuTile(
+                    context,
+                    Icons.school,
+                    "Wali Kelas",
+                    Colors.green,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AbsenWaliScreen(userData: widget.userData),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+                  _buildMenuTile(
+                    context,
+                    Icons.bar_chart,
+                    "Rekap Kelas",
+                    Colors.teal,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RekapKelasScreen(kelas: widget.userData['kelas'] ?? '1A'),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildMenuTile(
+                    context,
+                    Icons.description,
+                    "Laporan",
+                    Colors.indigo,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LaporanScreen(kelas: widget.userData['kelas'] ?? '1A'),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+
+                // Menu Umum untuk Semua Pengguna
                 _buildMenuTile(
                   context,
                   Icons.calendar_today,
