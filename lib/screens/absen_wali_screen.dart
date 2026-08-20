@@ -657,14 +657,18 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
     setState(() => _isSaving = true);
     try {
       final response = await http.post(
-        Uri.parse(AppConfig.apiUrl),
-        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          'action': 'simpanAbsensiSiswa',
-          'kelas': widget.userData?['kelas'] ?? '5A',
-          'waliKelas': widget.userData?['nama'] ?? '',
-          'id_lembaga': widget.userData?['id_lembaga'] ?? '',
-          'dataSiswa': daftarSisamDinamic,
+          "action": "simpanAbsensiSiswa",
+          "kelas": kelasAktif,
+          "wali_kelas": namaGuru,
+          "id_lembaga": idLembaga,
+          "siswa": listSiswa.map((s) => {
+            "id_siswa": s['id_user'] ?? s['id_siswa'], // pastikan key ini ada
+            "nama_siswa": s['nama'] ?? s['nama_siswa'], // pastikan key ini ada
+            "status": s['status']
+          }).toList()
         }),
       );
 
