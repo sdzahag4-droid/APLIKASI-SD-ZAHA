@@ -426,7 +426,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               children: [
-                if (widget.userData['role'] != 'Siswa') ...[
+                if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
               _buildMenuTile(
                 context,
                 Icons.people,
