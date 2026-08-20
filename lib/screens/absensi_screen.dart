@@ -90,7 +90,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse("https://script.google.com/macros/s/AKfycbxEEQpNgi6XrrgFhKEgNwmFh3_YMRUaMtgbe1R5HRdtO2yW0sPSMRItHLOdQ4IEovZW/exec"),
+        Uri.parse(AppConfig.apiUrl),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "action": "simpan_absensi",
