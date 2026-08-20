@@ -7,7 +7,7 @@ class AppConfig {
   static const String idLembaga = "SD1";
 
   // URL Web App Google Apps Script
-  static const String apiUrl = "https://script.google.com/macros/s/AKfycbxEEQpNgi6XrrgFhKEgNwmFh3_YMRUaMtgbe1R5HRdtO2yW0sPSMRItHLOdQ4IEovZW/exec
+  static const String apiUrl = "https://script.google.com/macros/s/AKfycbxEEQpNgi6XrrgFhKEgNwmFh3_YMRUaMtgbe1R5HRdtO2yW0sPSMRItHLOdQ4IEovZW/exec";
 
   // Kontak & Sosial Media
   static const String whatsappAdmin = "6285792518395";
