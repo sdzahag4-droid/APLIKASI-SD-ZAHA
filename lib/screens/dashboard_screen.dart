@@ -426,20 +426,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               children: [
+                  // Menu Absensi Guru (Hanya tampil jika bukan Siswa)
+                if (widget.userData['role'] != 'Siswa' && widget.userData['jabatan'] != 'Siswa') 
                   _buildMenuTile(
-                  context,
-                  Icons.how_to_reg, // Ikon untuk Absensi Guru
-                  "Absensi Guru",
-                  Colors.green, // Warna ikon
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AbsensiScreen(userData: widget.userData),
-                      ),
-                    );
-                  },
-                ),
+                    context,
+                    Icons.how_to_reg, // Ikon untuk Absensi Guru
+                    "Absensi Guru",
+                    Colors.green, // Warna ikon
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AbsensiScreen(userData: widget.userData),
+                        ),
+                      );
+                    },
+                  ),
                 // Menu Khusus Admin atau Wali Kelas
                 if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
                   _buildMenuTile(
