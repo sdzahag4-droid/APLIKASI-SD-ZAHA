@@ -72,6 +72,15 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       'jamSelesai': 24.0,
       'color': Colors.red
     },
+    {
+        'title': 'Absen Pulang',
+        'subtitle': 'Wajib GPS & Jam 10:00 - 14:00',
+        'pakaiGps': true,
+        'jamMulai': 10.0, // 10:00 WIB
+        'jamSelesai': 14.0, // 14:00 WIB
+        'color': Colors.purple,
+        'butuhAlasan': true, // Mengaktifkan kolom alasan
+      },
   ];
 
   // Helper untuk mengubah angka desimal jam menjadi string "HH:MM"
@@ -215,7 +224,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
 
       double schoolLat = -7.787930; // Koordinat sekolah
       double schoolLng = 113.375122; // Koordinat sekolah
-      double maxRadiusMeter = 50.0;
+      double maxRadiusMeter = 70.0;
 
       double distanceInMeters = Geolocator.distanceBetween(
         position.latitude,
