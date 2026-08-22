@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../config.dart';
 
 class LaporanScreen extends StatefulWidget {
@@ -52,16 +54,63 @@ class _LaporanScreenState extends State<LaporanScreen> {
     }
   }
 
-  void _bukaGoogleSheets() async {
-    final String url = "$iUrl?action=exportLaporan&kelas=${widget.kelas}";
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Tidak dapat membuka tautan ekspor laporan.")),
-      );
-    }
+  // Fungsi untuk Membuat dan Menampilkan Pratinjau/Cetak PDF
+  Future<void> _cetakPdfLaporan() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                "LAPORAN REKAPITULASI ABSENSI SISWA",
+                style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 14)),
+              pw.Divider(thickness: 1.5),
+              pw.SizedBox(height: 10),
+              pw.Table.fromTextArray(
+                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                data: List.generate(listLaporan.length, (index) {
+                  final siswa = listLaporan[index];
+                  return [
+                    (index + 1).toString(),
+                    siswa['Nama'] ?? 'Tanpa Nama',
+                    siswa['Hadir']?.toString() ?? '0',
+                    siswa['Izin']?.toString() ?? '0',
+                    siswa['Sakit']?.toString() ?? '0',
+                    siswa['Alpa']?.toString() ?? '0',
+                  ];
+                }),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                headerDecoration: const pw.BoxDecoration(color: PdfColors.indigo900),
+                rowDecoration: const pw.BoxDecoration(
+                  border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5)),
+                ),
+                cellAlignment: pw.Alignment.centerLeft,
+                cellAlignments: {
+                  0: pw.Alignment.center,
+                  2: pw.Alignment.center,
+                  3: pw.Alignment.center,
+                  4: pw.Alignment.center,
+                  5: pw.Alignment.center,
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Membuka jendela print/preview PDF
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'Laporan_Absensi_Kelas_${widget.kelas}.pdf',
+    );
   }
 
   @override
@@ -97,7 +146,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                     backgroundColor: Colors.indigo,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: _bukaGoogleSheets,
+                  onPressed: listLaporan.isEmpty ? null : _cetakPdfLaporan,
                   icon: const Icon(Icons.print, size: 18),
                   label: const Text("Cetak / Ekspor"),
                 ),

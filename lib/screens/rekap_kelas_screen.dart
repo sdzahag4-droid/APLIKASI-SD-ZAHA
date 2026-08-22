@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../config.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../config.dart';
 
 class RekapKelasScreen extends StatefulWidget {
@@ -53,12 +55,79 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
     }
   }
 
+  // Fungsi untuk Membuat dan Mencetak/Menyimpan PDF
+  Future<void> _cetakPdfRekap() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                "LAPORAN REKAPITULASI ABSENSI SISWA",
+                style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 14)),
+              pw.Divider(thickness: 1.5),
+              pw.SizedBox(height: 10),
+              pw.Table.fromTextArray(
+                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                data: List.generate(listRekap.length, (index) {
+                  final siswa = listRekap[index];
+                  return [
+                    (index + 1).toString(),
+                    siswa['Nama'] ?? 'Tanpa Nama',
+                    siswa['Hadir']?.toString() ?? '0',
+                    siswa['Izin']?.toString() ?? '0',
+                    siswa['Sakit']?.toString() ?? '0',
+                    siswa['Alpa']?.toString() ?? '0',
+                  ];
+                }),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                headerDecoration: const pw.BoxDecoration(color: PdfColors.teal800),
+                rowDecoration: const pw.BoxDecoration(
+                  border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5)),
+                ),
+                cellAlignment: pw.Alignment.centerLeft,
+                cellAlignments: {
+                  0: pw.Alignment.center,
+                  2: pw.Alignment.center,
+                  3: pw.Alignment.center,
+                  4: pw.Alignment.center,
+                  5: pw.Alignment.center,
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    // Membuka jendela preview cetak / simpan PDF
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+      name: 'Rekap_Absensi_Kelas_${widget.kelas}.pdf',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Rekap Absen Kelas ${widget.kelas}"),
         backgroundColor: Colors.teal,
+        actions: [
+          // Tombol Cetak/Ekspor PDF di AppBar
+          IconButton(
+            icon: const Icon(Icons.print),
+            tooltip: 'Cetak / Ekspor PDF',
+            onPressed: listRekap.isEmpty ? null : _cetakPdfRekap,
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
