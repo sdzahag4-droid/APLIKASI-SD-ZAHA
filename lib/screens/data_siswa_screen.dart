@@ -36,8 +36,23 @@ class _DataSiswaScreenState extends State<DataSiswaScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
+          // Ambil data mentah dari API
+          List<dynamic> rawData = data['data'] ?? [];
+
+          // Filter agar hanya data siswa murni yang masuk (mengabaikan guru/wali kelas)
+          List<dynamic> filteredData = rawData.where((item) {
+            String role = item['Role']?.toString().toLowerCase() ?? '';
+            String jabatan = item['Jabatan']?.toString().toLowerCase() ?? '';
+            
+            // Kondisi: Hanya masukkan jika role adalah siswa atau bukan guru/admin/karyawan/wali kelas
+            bool adalahSiswa = role == 'siswa' || 
+                (role != 'guru' && role != 'admin' && role != 'karyawan' && jabatan != 'wali kelas' && !jabatan.contains('wali kelas'));
+            
+            return adalahSiswa;
+          }).toList();
+
           setState(() {
-            listSiswa = data['data'] ?? [];
+            listSiswa = filteredData;
             isLoading = false;
           });
         } else {
