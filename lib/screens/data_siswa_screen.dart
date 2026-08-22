@@ -81,11 +81,11 @@ class _DataSiswaScreenState extends State<DataSiswaScreen> {
                           ),
                         ),
                         title: Text(
-                          siswa['nama_siswa'] ?? siswa['Nama_Siswa'] ?? 'Tanpa Nama',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
-                          "NIS/ID: ${siswa['id_siswa'] ?? siswa['ID_Siswa'] ?? '-'}\nWali Murid: ${siswa['wali_murid'] ?? '-'}",
+                          "NIS/ID: ${siswa['ID_User'] ?? siswa['NIS'] ?? siswa['id'] ?? '-'}\nWali Murid: ${siswa['Wali'] ?? siswa['Wali_Murid'] ?? '-'}",
                         ),
                         isThreeLine: true,
                       ),
