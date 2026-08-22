@@ -20,6 +20,7 @@ import 'tunggakan_screen.dart';
 import 'data_siswa_screen.dart';
 import 'rekap_kelas_screen.dart';
 import 'laporan_screen.dart';
+import 'rekap_absen_guru_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
