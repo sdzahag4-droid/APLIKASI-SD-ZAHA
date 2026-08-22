@@ -442,6 +442,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                   ),
+                  // Menu Rekap Absen Guru
+                  _buildMenuTile(
+                    context,
+                    Icons.assignment_turned_in,
+                    "Rekap Absen Guru",
+                    Colors.teal,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RekapAbsenGuruScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 // Menu Khusus Admin atau Wali Kelas
                 if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
                   _buildMenuTile(
