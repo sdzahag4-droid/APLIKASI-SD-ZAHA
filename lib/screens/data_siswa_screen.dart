@@ -8,10 +8,10 @@ class DataSiswaScreen extends StatefulWidget {
   const DataSiswaScreen({Key? key, required this.kelas}) : super(key: key);
 
   @override
-  _DataSiswaScreenState createState() => _DataSiswaScreenState();
+  _DataSisnaScreenState createState() => _DataSisnaScreenState();
 }
 
-class _DataSiswaScreenState extends State<DataSiswaScreen> {
+class _DataSisnaScreenState extends State<DataSiswaScreen> {
   List<dynamic> listSiswa = [];
   bool isLoading = true;
 
@@ -36,19 +36,25 @@ class _DataSiswaScreenState extends State<DataSiswaScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
-          // Ambil data mentah dari API
           List<dynamic> rawData = data['data'] ?? [];
 
-          // Filter agar hanya data siswa murni yang masuk (mengabaikan guru/wali kelas)
+          // Filter ketat: Hanya ambil data yang benar-benar siswa murni
           List<dynamic> filteredData = rawData.where((item) {
-            String role = item['Role']?.toString().toLowerCase() ?? '';
-            String jabatan = item['Jabatan']?.toString().toLowerCase() ?? '';
+            String role = (item['Role'] ?? item['role'] ?? '').toString().toLowerCase();
+            String jabatan = (item['Jabatan'] ?? item['jabatan'] ?? '').toString().toLowerCase();
+            String nama = (item['Nama'] ?? item['nama'] ?? '').toString().toLowerCase();
+
+            // Buang jika terdeteksi sebagai guru, admin, karyawan, wali kelas, atau nama guru terkait
+            if (role == 'guru' || 
+                role == 'admin' || 
+                role == 'karyawan' || 
+                jabatan.contains('wali') || 
+                jabatan.contains('guru') ||
+                nama.contains('ely dewi')) {
+              return false; 
+            }
             
-            // Kondisi: Hanya masukkan jika role adalah siswa atau bukan guru/admin/karyawan/wali kelas
-            bool adalahSiswa = role == 'siswa' || 
-                (role != 'guru' && role != 'admin' && role != 'karyawan' && jabatan != 'wali kelas' && !jabatan.contains('wali kelas'));
-            
-            return adalahSiswa;
+            return true; // Loloskan hanya untuk siswa
           }).toList();
 
           setState(() {
