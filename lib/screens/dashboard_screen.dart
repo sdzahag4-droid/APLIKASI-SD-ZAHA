@@ -443,7 +443,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                   ),
-                  // Menu Rekap Absen Guru
+                if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Admin') ...[
                   _buildMenuTile(
                     context,
                     Icons.assignment_turned_in,
@@ -458,6 +458,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                   ),
+                ],
                 // Menu Khusus Admin atau Wali Kelas
                 if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Wali Kelas') ...[
                   _buildMenuTile(
