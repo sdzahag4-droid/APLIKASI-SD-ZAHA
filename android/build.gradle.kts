@@ -10,7 +10,7 @@ tasks.register<Delete>("clean") {
 }
 
 subprojects {
-    afterEvaluate { proj ->
+    afterEvaluate { proj: org.gradle.api.Project ->
         if (proj.hasProperty("android")) {
             val androidExtension = proj.extensions.findByName("android")
             if (androidExtension != null) {
