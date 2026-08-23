@@ -20,7 +20,7 @@ dependencies:
   geolocator: ^12.0.0
   file_picker: ^8.0.0 # <-- Ditambahkan agar fitur upload Excel berfungsi
   pdf: ^3.10.4      # <-- Dipindah ke dependencies utama
-  printing: ^5.11.1 # <-- Dipindah ke dependencies utama
+  printing: ^5.13.2 # <-- Dipindah ke dependencies utama
 
 dev_dependencies:
   flutter_test:
