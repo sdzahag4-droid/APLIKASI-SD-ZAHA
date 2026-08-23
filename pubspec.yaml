@@ -38,3 +38,6 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/icon.png"
+
+  dependency_overrides:
+  printing: ^5.10.0
