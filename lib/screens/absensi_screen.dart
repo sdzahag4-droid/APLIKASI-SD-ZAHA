@@ -3,6 +3,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io'; // Diperlukan untuk tipe data File foto
+import 'package:image_picker/image_picker.dart'; // Package kamera
 import 'package:aplikasi_sd_zaha/config.dart';
 
 class AbsensiScreen extends StatefulWidget {
@@ -21,37 +23,45 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   
   // Status absensi yang dipilih (Default: Absen Masuk)
   String _selectedStatus = 'Absen Masuk';
+  
+  // Variabel untuk menyimpan file foto selfie
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
 
-  // Daftar pilihan status absensi guru beserta batasan jamnya (dalam format desimal jam)
+  // Daftar pilihan status absensi guru beserta batasan jamnya
   final List<Map<String, dynamic>> _daftarStatus = [
     {
       'title': 'Absen Masuk', 
-      'subtitle': 'Wajib GPS & Jam 05:00 - 07:30', 
+      'subtitle': 'Wajib Kamera, GPS & Jam 05:00 - 07:30', 
       'pakaiGps': true, 
-      'jamMulai': 5.0,   // 05:00
-      'jamSelesai': 7.5, // 07:30
+      'pakaiKamera': true,
+      'jamMulai': 5.0,   
+      'jamSelesai': 7.5, 
       'color': Colors.green
     },
     {
       'title': 'Izin', 
       'subtitle': 'Tanpa GPS & Jam 05:00 - 07:15', 
       'pakaiGps': false, 
-      'jamMulai': 5.0,    // 05:00
-      'jamSelesai': 7.25, // 07:15
+      'pakaiKamera': false,
+      'jamMulai': 5.0,    
+      'jamSelesai': 7.25, 
       'color': Colors.blue
     },
     {
       'title': 'Terlambat', 
       'subtitle': 'Tanpa GPS & Jam 07:00 - 08:00', 
       'pakaiGps': false, 
-      'jamMulai': 7.0,   // 07:00
-      'jamSelesai': 8.0, // 08:00
+      'pakaiKamera': false,
+      'jamMulai': 7.0,   
+      'jamSelesai': 8.0, 
       'color': Colors.amber.shade800
     },
     {
       'title': 'Sakit', 
       'subtitle': 'Tanpa GPS aktif (Bebas jam)', 
       'pakaiGps': false, 
+      'pakaiKamera': false,
       'jamMulai': 0.0, 
       'jamSelesai': 24.0,
       'color': Colors.orange
@@ -60,6 +70,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       'title': 'Cuti', 
       'subtitle': 'Tanpa GPS aktif (Bebas jam)', 
       'pakaiGps': false, 
+      'pakaiKamera': false,
       'jamMulai': 0.0, 
       'jamSelesai': 24.0,
       'color': Colors.purple
@@ -68,18 +79,19 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       'title': 'Tidak Masuk', 
       'subtitle': 'Tanpa GPS aktif (Bebas jam)', 
       'pakaiGps': false, 
+      'pakaiKamera': false,
       'jamMulai': 0.0, 
       'jamSelesai': 24.0,
       'color': Colors.red
     },
     {
         'title': 'Absen Pulang',
-        'subtitle': 'Wajib GPS & Jam 10:00 - 14:00',
+        'subtitle': 'Wajib Kamera, GPS & Jam 10:00 - 14:00',
         'pakaiGps': true,
-        'jamMulai': 10.0, // 10:00 WIB
-        'jamSelesai': 14.0, // 14:00 WIB
+        'pakaiKamera': true,
+        'jamMulai': 10.0, 
+        'jamSelesai': 14.0, 
         'color': Colors.purple,
-        'butuhAlasan': true, // Mengaktifkan kolom alasan
       },
   ];
 
@@ -90,13 +102,38 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
     return '${jam.toString().padLeft(2, '0')}:${menit.toString().padLeft(2, '0')}';
   }
 
-  // Fungsi untuk mengirim data absensi ke Google Apps Script / Google Sheets
+  // Fungsi untuk mengambil foto menggunakan Kamera Depan (Selfie)
+  Future<bool> _ambilFotoSelfie() async {
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front, // Mengarahkan ke kamera depan
+        imageQuality: 50, // Kompres kualitas gambar agar tidak terlalu besar ukurannya
+      );
+
+      if (photo != null) {
+        setState(() {
+          _imageFile = File(photo.path);
+        });
+        return true;
+      }
+      return false;
+    } catch (e) {
+      setState(() {
+        _statusMessage = 'Gagal membuka kamera: $e';
+      });
+      return false;
+    }
+  }
+
+  // Fungsi untuk mengirim data absensi ke server (Google Sheets)
   Future<void> _kirimAbsensiKeServer({
     required String nama,
     required String status,
     required dynamic jarak,
     required dynamic lat,
     required dynamic lng,
+    String? fotoBase64, // Tambahan parameter untuk mengirim foto jika diperlukan
   }) async {
     try {
       final response = await http.post(
@@ -104,12 +141,13 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "action": "simpan_absensi",
-          "nama": nama,         // Mengambil dari parameter 'required String nama'
-          "jabatan": "Guru",    // Bisa diisi string jabatan atau parameter tambahan jika ada
-          "status": status,     // Mengambil dari parameter 'required String status'
-          "jarak": jarak,       // Mengambil dari parameter 'required dynamic jarak'
-          "lat": lat,           // Mengambil dari parameter 'required dynamic lat'
-          "lng": lng,           // Mengambil dari parameter 'required dynamic lng'
+          "nama": nama,         
+          "jabatan": "Guru",    
+          "status": status,     
+          "jarak": jarak,       
+          "lat": lat,           
+          "lng": lng,           
+          "foto": fotoBase64 ?? "", // Kirim string base64 foto jika backend mendukung
         }),
       );
 
@@ -135,6 +173,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
     // Ambil konfigurasi status yang dipilih
     final statusConfig = _daftarStatus.firstWhere((element) => element['title'] == _selectedStatus);
     bool pakaiGps = statusConfig['pakaiGps'];
+    bool pakaiKamera = statusConfig['pakaiKamera'] ?? false;
     double jamMulai = statusConfig['jamMulai'];
     double jamSelesai = statusConfig['jamSelesai'];
 
@@ -153,19 +192,20 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       return;
     }
 
-    // 2. JIKA TIDAK PAKAI GPS (Izin, Terlambat, Sakit, Cuti, Tidak Masuk)
+    // 2. JIKA TIDAK PAKAI GPS & KAMERA (Izin, Terlambat, Sakit, Cuti, Tidak Masuk)
     if (!pakaiGps) {
       setState(() {
         _isLoading = true;
         _statusMessage = 'Mengirim data $_selectedStatus ke server...';
+        _imageFile = null; // Reset foto
       });
 
       await _kirimAbsensiKeServer(
         nama: namaUser,
         status: _selectedStatus,
-        jarak: "-",
-        lat: "-",
-        lng: "-",
+        jarak: 0, 
+        lat: 0,   
+        lng: 0,   
       );
 
       setState(() {
@@ -176,7 +216,25 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       return;
     }
 
-    // 3. JIKA PAKAI GPS (Absen Masuk)
+    // 3. JIKA PAKAI KAMERA & GPS (Absen Masuk / Absen Pulang)
+    if (pakaiKamera) {
+      setState(() {
+        _statusMessage = 'Silakan ambil foto selfie terlebih dahulu...';
+      });
+
+      // Buka kamera selfie
+      bool fotoBerhasil = await _ambilFotoSelfie();
+      if (!fotoBerhasil) {
+        setState(() {
+          _isLoading = false;
+          _statusMessage = 'Absen dibatalkan: Anda harus mengambil foto selfie.';
+          _isSuccess = false;
+        });
+        return;
+      }
+    }
+
+    // Lanjut pengecekan GPS
     setState(() {
       _isLoading = true;
       _statusMessage = 'Mendapatkan lokasi GPS Anda...';
@@ -237,22 +295,30 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         _isLoading = false;
         if (distanceInMeters <= maxRadiusMeter) {
           _isSuccess = true;
-          _statusMessage = 'Absen Masuk Berhasil! Dalam area sekolah '
+          _statusMessage = 'Absen Berhasil! Dalam area sekolah '
               '(${distanceInMeters.toStringAsFixed(1)} meter dari titik pusat).';
         } else {
           _isSuccess = false;
           _statusMessage = 'Absen Gagal! Anda di luar area sekolah '
-              '(${distanceInMeters.toStringAsFixed(1)} meter). Maksimal radius 50 meter.';
+              '(${distanceInMeters.toStringAsFixed(1)} meter). Maksimal radius 70 meter.';
         }
       });
 
       if (_isSuccess) {
+        // Konversi foto ke base64 jika ingin dikirim (opsional, sesuaikan dengan backend GAS Anda)
+        String? base64Image;
+        if (_imageFile != null) {
+          List<int> imageBytes = await _imageFile!.readAsBytes();
+          base64Image = base64Encode(imageBytes);
+        }
+
         await _kirimAbsensiKeServer(
           nama: namaUser,
           status: _selectedStatus,
           jarak: double.parse(distanceInMeters.toStringAsFixed(2)),
           lat: position.latitude,
           lng: position.longitude,
+          fotoBase64: base64Image,
         );
       }
 
@@ -279,7 +345,32 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.fingerprint, size: 70, color: Colors.green),
+            // Preview Foto Selfie jika sudah diambil
+            Center(
+              child: Stack(
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.green, width: 3),
+                      color: Colors.grey.shade200,
+                    ),
+                    child: _imageFile != null
+                        ? ClipOval(
+                            child: Image.file(
+                              _imageFile!,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Icon(Icons.person, size: 70, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 10),
             Text(
               'Halo, $namaUser',
@@ -327,6 +418,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                   onChanged: (value) {
                     setState(() {
                       _selectedStatus = value!;
+                      _imageFile = null; // Reset foto ketika ganti status
                       _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
                     });
                   },
@@ -372,7 +464,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                       height: 20, 
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                     )
-                  : const Icon(Icons.send),
+                  : const Icon(Icons.camera_alt),
               label: Text(_isLoading ? 'Memproses...' : 'Kirim Absen ($_selectedStatus)'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
