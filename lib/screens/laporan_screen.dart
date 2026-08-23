@@ -24,6 +24,30 @@ class _LaporanScreenState extends State<LaporanScreen> {
     _fetchLaporanData();
   }
 
+  // Fungsi untuk mendapatkan nama wali kelas secara otomatis berdasarkan kelas
+  String _getWaliKelas(String kelas) {
+    switch (kelas.toUpperCase()) {
+      case '1A': return 'Mutmainnah, S.Pd.';
+      case '1B': return 'Hairul Nizak, S.Pd.I.';
+      case '1C': return 'Fitriyah Ningsih, S.Pd.I.';
+      case '1D': return 'Afkarina Hasin, S.Pd.';
+      case '2A': return 'Lusfiana M A, S.Pd.';
+      case '2B': return 'Nurlaila, S.Pd.I.';
+      case '2C': return 'Ely Dewi Cahyati, SE.';
+      case '3A': return 'Rifqoh Thoyyibah, M.Pd.';
+      case '3B': return 'Nihayati Putri Suseno, S.Pd.';
+      case '3C': return 'Nadifatul Ainia, S.Pd.';
+      case '4A': return 'Yuliatus Soliha, S.Pd.';
+      case '4B': return 'Anang Firdaus, S.Pd.';
+      case '4C': return 'Ach Riyan Firdaus, S.Pd.';
+      case '5A': return 'Irawati, S.Pd.I.';
+      case '5B': return 'Muhammad Qosim, S.Pd.';
+      case '6A': return 'Nur Dyana Kholidah, S.Pd., Gr.';
+      case '6B': return 'Syamsul Wahidin, S.Pd.';
+      default: return 'Wali Kelas';
+    }
+  }
+
   Future<void> _fetchLaporanData() async {
     setState(() {
       isLoading = true;
@@ -57,6 +81,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
   // Fungsi untuk Membuat dan Menampilkan Pratinjau/Cetak PDF
   Future<void> _cetakPdfLaporan() async {
     final pdf = pw.Document();
+    final namaWaliKelas = _getWaliKelas(widget.kelas);
 
     pdf.addPage(
       pw.Page(
@@ -71,15 +96,17 @@ class _LaporanScreenState extends State<LaporanScreen> {
               ),
               pw.SizedBox(height: 4),
               pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 14)),
+              pw.Text("Wali Kelas: $namaWaliKelas", style: pw.TextStyle(fontSize: 14)),
               pw.Divider(thickness: 1.5),
               pw.SizedBox(height: 10),
               pw.Table.fromTextArray(
                 headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
                 data: List.generate(listLaporan.length, (index) {
                   final siswa = listLaporan[index];
+                  final namaSiswa = siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama';
                   return [
                     (index + 1).toString(),
-                    siswa['Nama'] ?? 'Tanpa Nama',
+                    namaSiswa,
                     siswa['Hadir']?.toString() ?? '0',
                     siswa['Izin']?.toString() ?? '0',
                     siswa['Sakit']?.toString() ?? '0',
@@ -165,6 +192,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                         itemCount: listLaporan.length,
                         itemBuilder: (context, index) {
                           final siswa = listLaporan[index];
+                          final namaSiswa = siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama';
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.indigo.withOpacity(0.1),
@@ -174,7 +202,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                               ),
                             ),
                             title: Text(
-                              siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama',
+                              namaSiswa,
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
