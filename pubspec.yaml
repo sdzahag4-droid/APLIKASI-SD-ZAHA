@@ -19,8 +19,8 @@ dependencies:
   shared_preferences: ^2.5.5
   geolocator: ^12.0.0
   file_picker: ^8.0.0
-  pdf: ^3.10.4
-  printing: ^5.10.0
+  pdf: 3.10.4
+  printing: 5.10.0
 
 dev_dependencies:
   flutter_test:
@@ -39,5 +39,6 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/icon/icon.png"
 
-  dependency_overrides:
-  printing: ^5.10.0
+dependency_overrides:
+  pdf: 3.10.4
+  printing: 5.10.0
