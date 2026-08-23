@@ -174,7 +174,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                               ),
                             ),
                             title: Text(
-                              siswa['Nama'] ?? siswa['nama'] ?? siswa['nama_siswa'] ?? 'Tanpa Nama',
+                              siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama',
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
