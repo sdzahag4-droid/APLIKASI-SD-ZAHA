@@ -10,10 +10,16 @@ tasks.register<Delete>("clean") {
 }
 
 subprojects {
-    afterEvaluate { project ->
-        if (project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")) {
-            project.extensions.configure<com.android.build.gradle.BaseExtension> {
-                compileSdkVersion(34)
+    afterEvaluate { proj ->
+        if (proj.hasProperty("android")) {
+            val androidExtension = proj.extensions.findByName("android")
+            if (androidExtension != null) {
+                try {
+                    val method = androidExtension.javaClass.getMethod("compileSdkVersion", Int::class.java)
+                    method.invoke(androidExtension, 34)
+                } catch (e: Exception) {
+                    // Abaikan jika tidak mendukung
+                }
             }
         }
     }
