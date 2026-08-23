@@ -152,7 +152,7 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              siswa['Nama'] ?? 'Tanpa Nama',
+                              siswa['Nama'] ?? siswa['nama'] ?? siswa['nama_siswa'] ?? 'Tanpa Nama',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
