@@ -105,10 +105,6 @@ class _DataSisnaScreenState extends State<DataSiswaScreen> {
                           siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text(
-                          "NIS/ID: ${siswa['ID_User'] ?? siswa['NIS'] ?? siswa['id'] ?? '-'}\nWali Murid: ${siswa['Wali'] ?? siswa['Wali_Murid'] ?? '-'}",
-                        ),
-                        isThreeLine: true,
                       ),
                     );
                   },
