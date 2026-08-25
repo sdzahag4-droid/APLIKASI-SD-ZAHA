@@ -148,7 +148,6 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
                   'Sakit',
                   'Cuti',
                   'Tidak Masuk',
-                  'Total'
                 ],
                 data: List.generate(listRekapGuru.length, (index) {
                   final guru = listRekapGuru[index];
@@ -162,7 +161,6 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
                     guru['Sakit']?.toString() ?? '0',
                     guru['Cuti']?.toString() ?? '0',
                     guru['Tidak Masuk']?.toString() ?? '0',
-                    guru['Total Kehadiran']?.toString() ?? '0',
                   ];
                 }),
                 headerStyle: pw.TextStyle(
