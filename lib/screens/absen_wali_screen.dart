@@ -326,6 +326,11 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     String namaWali = currentUser['nama'] ?? 'Wali Kelas';
     String idLembaga = currentUser['id_lembaga'] ?? '';
 
+    // Mendapatkan tanggal dan waktu saat ini untuk info cetak
+    DateTime now = DateTime.now();
+    String tanggalCetak = "${now.day.toString().padLeft(2, '0')} ${_getBulanIndo(now.month)} ${now.year}";
+    String waktuCetak = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} WIB";
+
     try {
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}?action=getSiswaKelas&kelas=$kelas&id_lembaga=$idLembaga'),
@@ -378,13 +383,34 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text("LAPORAN REKAPITULASI ABSENSI SISWA", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                // Header Laporan
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text("LAPORAN REKAPITULASI ABSENSI SISWA", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                        pw.SizedBox(height: 4),
+                        pw.Text("Lembaga: ${AppConfig.namaLembaga}", style: const pw.TextStyle(fontSize: 11)),
+                        pw.Text("Kelas: $kelas  |  Wali Kelas: $namaWali", style: const pw.TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.end,
+                      children: [
+                        pw.Text("Periode: $bulan $tahun", style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
+                        pw.Text("Dicetak pada: $tanggalCetak", style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
+                        pw.Text("Pukul: $waktuCetak", style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700)),
+                      ],
+                    ),
+                  ],
+                ),
+                pw.Divider(thickness: 1.5, height: 16),
                 pw.SizedBox(height: 4),
-                pw.Text("Lembaga: ${AppConfig.namaLembaga}", style: const pw.TextStyle(fontSize: 12)),
-                pw.Text("Kelas: $kelas  |  Wali Kelas: $namaWali", style: const pw.TextStyle(fontSize: 12)),
-                pw.Text("Periode Rekap: $bulan $tahun", style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
-                pw.Divider(thickness: 1.5),
-                pw.SizedBox(height: 10),
+                
+                // Tabel Data & Baris Total di Bawah
                 pw.Table.fromTextArray(
                   headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
                   data: [
@@ -392,8 +418,9 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                     ['TOTAL', '', totHadir.toString(), totIzin.toString(), totSakit.toString(), totAlpa.toString()]
                   ],
                   border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white, fontSize: 10),
                   headerDecoration: const pw.BoxDecoration(color: PdfColor.fromInt(0xFF1E293B)),
+                  cellStyle: const pw.TextStyle(fontSize: 10),
                   cellAlignment: pw.Alignment.centerLeft,
                   cellAlignments: {
                     0: pw.Alignment.center,
@@ -409,12 +436,27 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         ),
       );
 
-      // PERBAIKAN: Menggunakan onLayout alih-alih onPdf vznik
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
         name: 'Laporan_Absensi_Kelas_$kelas-$bulan-$tahun.pdf',
       );
 
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal mencetak laporan: $e"), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  // Helper untuk mengubah angka bulan menjadi nama Bulan Bahasa Indonesia
+  String _getBulanIndo(int bulan) {
+    const listBulan = [
+      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'July', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return (bulan >= 1 && bulan <= 12) ? listBulan[bulan] : '';
+  }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
