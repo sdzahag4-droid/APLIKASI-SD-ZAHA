@@ -424,6 +424,9 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                           _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
                         });
                       },
+                    ),
+                  ),
+                ), //
                     const SizedBox(height: 12),
                     TextField(
                       controller: _keteranganController,
@@ -433,7 +436,6 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    
                     const SizedBox(height: 20),
             // Kotak Informasi Status Pesan
             Container(
