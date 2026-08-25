@@ -25,6 +25,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
 
   int totalSiswa = 0;
   int totalHadir = 0;
+  int totalSakit = 0;
   int totalIzin = 0;
   int totalAlpa = 0;
 
@@ -52,6 +53,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         List dataSiswa = result['data'] ?? [];
         
         int hadir = 0;
+        int sakit = 0;
         int izin = 0;
         int alpa = 0;
 
@@ -59,7 +61,9 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
           String status = (siswa['status'] ?? 'Hadir').toString().toLowerCase();
           if (status == 'hadir') {
             hadir++;
-          } else if (status == 'izin' || status == 'sakit') {
+          } else if (status == 'sakit') { // <-- Khusus Sakit
+            sakit++;
+          } else if (status == 'izin') {  // <-- Khusus Izin
             izin++;
           } else {
             alpa++;
@@ -69,6 +73,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         setState(() {
           totalSiswa = dataSiswa.length;
           totalHadir = hadir > 0 ? hadir : dataSiswa.length;
+          totalSakit = sakit;
           totalIzin = izin;
           totalAlpa = alpa;
         });
@@ -578,7 +583,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                         child: _buildStatCard(
                           icon: Icons.check_circle,
                           label: "Hadir",
-                          value: "$totalHadir",
+                          value: '$jmlHadir',
                           color: Colors.green.shade700,
                           bgColor: Colors.green.shade50,
                         ),
@@ -586,9 +591,19 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: _buildStatCard(
+                          icon: Icons.healing,
+                          label: "Sakit",
+                          value: '$jmlSakit',
+                          color: Colors.orange.shade700,
+                          bgColor: Colors.orange.shade50,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildStatCard(
                           icon: Icons.info,
                           label: "Izin",
-                          value: "$totalIzin",
+                          value: '$jmlIzin'
                           color: Colors.amber.shade800,
                           bgColor: Colors.amber.shade50,
                         ),
@@ -598,7 +613,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                         child: _buildStatCard(
                           icon: Icons.cancel,
                           label: "Alpa",
-                          value: "$totalAlpa",
+                          value: '$jmlAlpa'
                           color: Colors.red.shade700,
                           bgColor: Colors.red.shade50,
                         ),

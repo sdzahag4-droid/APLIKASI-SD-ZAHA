@@ -35,6 +35,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? _photoUrl;
   bool _isUploadingPhoto = false;
 
+  // Variabel penampung rekap absensi dashboard
+int jmlHadir = 0;
+int jmlSakit = 0;
+int jmlAlpa = 0;
+
+Future<void> _fetchDataAbsensi() async {
+  try {
+    final kelasUser = widget.userData['kelas'] ?? '5B';
+    final response = await http.get(
+      Uri.parse("${AppConfig.apiUrl}?action=getRekapAbsenSiswa&kelas=$kelasUser"),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == 'success') {
+        List listRekap = (data['data'] as List).where((item) {
+          return item['Kelas']?.toString() == kelasUser;
+        }).toList();
+
+        setState(() {
+          jmlHadir = listRekap.where((item) => item['Status']?.toString().toLowerCase() == 'hadir').length;
+          jmlSakit = listRekap.where((item) => item['Status']?.toString().toLowerCase() == 'sakit').length;
+          jmlAlpa = listRekap.where((item) => item['Status']?.toString().toLowerCase() == 'alpa' || item['Status']?.toString().toLowerCase() == 'alpha').length;
+        });
+      }
+    }
+  } catch (e) {
+    print("Gagal ambil absensi dashboard: $e");
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+  _fetchDataAbsensi();
+}
+
   Future<void> _openUrl(String urlString) async {
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
