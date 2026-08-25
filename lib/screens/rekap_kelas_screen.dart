@@ -24,6 +24,31 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
     _fetchRekapData();
   }
 
+  // Helper untuk mengubah string tanggal menjadi format "Bulan Tahun" (contoh: "Agustus 2026")
+  String _formatPeriode(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty || rawDate == '-') return 'Agustus 2026';
+
+    try {
+      DateTime dateTime = DateTime.parse(rawDate);
+      const listBulan = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+      String namaBulan = listBulan[dateTime.month - 1];
+      return "$namaBulan ${dateTime.year}";
+    } catch (e) {
+      return rawDate;
+    }
+  }
+
+  // Mengambil string bulan untuk judul periode dari data rekap jika tersedia
+  String _getJudulPeriode() {
+    if (listRekap.isNotEmpty && listRekap[0]['Bulan'] != null) {
+      return _formatPeriode(listRekap[0]['Bulan'].toString());
+    }
+    return "Agustus 2026";
+  }
+
   Future<void> _fetchRekapData() async {
     setState(() {
       isLoading = true;
@@ -55,9 +80,10 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
     }
   }
 
-  // Fungsi untuk Membuat dan Mencetak/Menyimpan PDF
+  // Fungsi untuk Membuat dan Mencetak/Menyimpan PDF dengan Keterangan Waktu & Kolom Total
   Future<void> _cetakPdfRekap() async {
     final pdf = pw.Document();
+    final String periodeTeks = _getJudulPeriode();
 
     pdf.addPage(
       pw.Page(
@@ -68,23 +94,39 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
             children: [
               pw.Text(
                 "LAPORAN REKAPITULASI ABSENSI SISWA",
-                style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 4),
-              pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 14)),
+              // Keterangan Judul Waktu (Bulan dan Tahun)
+              pw.Text(
+                "PERIODE: ${periodeTeks.toUpperCase()}",
+                style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.grey800),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 10)),
               pw.Divider(thickness: 1.5),
               pw.SizedBox(height: 10),
+              
+              // Tabel dengan Kolom Total Kehadiran Ditambahkan
               pw.Table.fromTextArray(
-                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Total'],
                 data: List.generate(listRekap.length, (index) {
                   final siswa = listRekap[index];
+                  
+                  int hadir = int.tryParse(siswa['Hadir']?.toString() ?? '0') ?? 0;
+                  int izin = int.tryParse(siswa['Izin']?.toString() ?? '0') ?? 0;
+                  int sakit = int.tryParse(siswa['Sakit']?.toString() ?? '0') ?? 0;
+                  int alpa = int.tryParse(siswa['Alpa']?.toString() ?? '0') ?? 0;
+                  int totalKehadiran = hadir + izin + sakit + alpa;
+
                   return [
                     (index + 1).toString(),
-                    siswa['Nama'] ?? 'Tanpa Nama',
-                    siswa['Hadir']?.toString() ?? '0',
-                    siswa['Izin']?.toString() ?? '0',
-                    siswa['Sakit']?.toString() ?? '0',
-                    siswa['Alpa']?.toString() ?? '0',
+                    siswa['Nama'] ?? siswa['Nama_Siswa'] ?? 'Tanpa Nama',
+                    hadir.toString(),
+                    izin.toString(),
+                    sakit.toString(),
+                    alpa.toString(),
+                    totalKehadiran.toString(), // Kolom Total Kehadiran
                   ];
                 }),
                 headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
@@ -99,6 +141,7 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
                   3: pw.Alignment.center,
                   4: pw.Alignment.center,
                   5: pw.Alignment.center,
+                  6: pw.Alignment.center,
                 },
               ),
             ],
@@ -121,7 +164,6 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
         title: Text("Rekap Absen Kelas ${widget.kelas}"),
         backgroundColor: Colors.teal,
         actions: [
-          // Tombol Cetak/Ekspor PDF di AppBar
           IconButton(
             icon: const Icon(Icons.print),
             tooltip: 'Cetak / Ekspor PDF',
