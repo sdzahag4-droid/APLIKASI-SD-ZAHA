@@ -24,6 +24,35 @@ class _LaporanScreenState extends State<LaporanScreen> {
     _fetchLaporanData();
   }
 
+  // Helper untuk mengubah string tanggal menjadi format "Bulan Tahun" (contoh: "Agustus 2026")
+  String _formatPeriode(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty || rawDate == '-') return 'Agustus 2026';
+
+    try {
+      DateTime dateTime = DateTime.parse(rawDate);
+      const listBulan = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+      String namaBulan = listBulan[dateTime.month - 1];
+      return "$namaBulan ${dateTime.year}";
+    } catch (e) {
+      return rawDate;
+    }
+  }
+
+  // Mengambil string bulan untuk judul periode dari data laporan jika tersedia
+  String _getJudulPeriode() {
+    if (listLaporan.isNotEmpty) {
+      for (var item in listLaporan) {
+        if (item['Bulan'] != null && item['Bulan'].toString().isNotEmpty && item['Bulan'].toString() != '-') {
+          return _formatPeriode(item['Bulan'].toString());
+        }
+      }
+    }
+    return "Agustus 2026";
+  }
+
   // Fungsi untuk mendapatkan nama wali kelas secara otomatis berdasarkan kelas
   String _getWaliKelas(String kelas) {
     switch (kelas.toUpperCase()) {
@@ -78,10 +107,11 @@ class _LaporanScreenState extends State<LaporanScreen> {
     }
   }
 
-  // Fungsi untuk Membuat dan Menampilkan Pratinjau/Cetak PDF
+  // Fungsi untuk Membuat dan Menampilkan Pratinjau/Cetak PDF dengan Periode & Kolom Total
   Future<void> _cetakPdfLaporan() async {
     final pdf = pw.Document();
     final namaWaliKelas = _getWaliKelas(widget.kelas);
+    final String periodeTeks = _getJudulPeriode();
 
     pdf.addPage(
       pw.Page(
@@ -95,22 +125,38 @@ class _LaporanScreenState extends State<LaporanScreen> {
                 style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 4),
-              pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 14)),
-              pw.Text("Wali Kelas: $namaWaliKelas", style: pw.TextStyle(fontSize: 14)),
+              // Keterangan Periode Bulan & Tahun
+              pw.Text(
+                "PERIODE: ${periodeTeks.toUpperCase()}",
+                style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.grey800),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text("Kelas: ${widget.kelas}", style: pw.TextStyle(fontSize: 12)),
+              pw.Text("Wali Kelas: $namaWaliKelas", style: pw.TextStyle(fontSize: 12)),
               pw.Divider(thickness: 1.5),
               pw.SizedBox(height: 10),
+              
+              // Tabel dengan Kolom Total Kehadiran
               pw.Table.fromTextArray(
-                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Total'],
                 data: List.generate(listLaporan.length, (index) {
                   final siswa = listLaporan[index];
                   final namaSiswa = siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama';
+                  
+                  int hadir = int.tryParse(siswa['Hadir']?.toString() ?? '0') ?? 0;
+                  int izin = int.tryParse(siswa['Izin']?.toString() ?? '0') ?? 0;
+                  int sakit = int.tryParse(siswa['Sakit']?.toString() ?? '0') ?? 0;
+                  int alpa = int.tryParse(siswa['Alpa']?.toString() ?? '0') ?? 0;
+                  int totalKehadiran = hadir + izin + sakit + alpa;
+
                   return [
                     (index + 1).toString(),
                     namaSiswa,
-                    siswa['Hadir']?.toString() ?? '0',
-                    siswa['Izin']?.toString() ?? '0',
-                    siswa['Sakit']?.toString() ?? '0',
-                    siswa['Alpa']?.toString() ?? '0',
+                    hadir.toString(),
+                    izin.toString(),
+                    sakit.toString(),
+                    alpa.toString(),
+                    totalKehadiran.toString(), // Kolom Total Kehadiran
                   ];
                 }),
                 headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
@@ -125,6 +171,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                   3: pw.Alignment.center,
                   4: pw.Alignment.center,
                   5: pw.Alignment.center,
+                  6: pw.Alignment.center,
                 },
               ),
             ],
@@ -160,7 +207,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                   children: [
                     const Text(
                       "Rekap Bulanan Kelas",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold as FontWeight?),
                     ),
                     Text(
                       "Total Siswa: ${listLaporan.length} Orang",
