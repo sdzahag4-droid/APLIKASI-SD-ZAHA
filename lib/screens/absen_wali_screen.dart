@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../config.dart';
 import 'data_siswa_screen.dart';
 
@@ -246,8 +249,185 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-  void _showFeatureDialog(
-      BuildContext context, String title, String description) {
+  // Dialog untuk Pilihan Bulan & Tahun sebelum cetak Laporan PDF
+  void _showCetakLaporanDialog(BuildContext context) {
+    String selectedBulan = "Januari";
+    String selectedTahun = "2026";
+
+    final listBulan = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    final listTahun = ["2025", "2026", "2027"];
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Row(
+            children: [
+              Icon(Icons.print, color: Color(0xFF2563EB)),
+              SizedBox(width: 10),
+              Text("Cetak Laporan Absensi", style: TextStyle(fontSize: 18)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Pilih Bulan dan Tahun Rekapitulasi Laporan:"),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                value: selectedBulan,
+                decoration: const InputDecoration(
+                  labelText: "Bulan",
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                items: listBulan.map((b) => DropdownMenuItem(value: b, child: Text(b))).toList(),
+                onChanged: (val) => setDialogState(() => selectedBulan = val!),
+              ),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                value: selectedTahun,
+                decoration: const InputDecoration(
+                  labelText: "Tahun",
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                items: listTahun.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                onChanged: (val) => setDialogState(() => selectedTahun = val!),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text("Batal", style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pop(ctx);
+                _generateAndPrintPdf(selectedBulan, selectedTahun);
+              },
+              child: const Text("Cetak / PDF"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Fungsi Pembuatan PDF Laporan Dilengkapi Baris Total dan Keterangan Bulan/Tahun
+  Future<void> _generateAndPrintPdf(String bulan, String tahun) async {
+    String kelas = currentUser['kelas'] ?? '5A';
+    String namaWali = currentUser['nama'] ?? 'Wali Kelas';
+    String idLembaga = currentUser['id_lembaga'] ?? '';
+
+    // Ambil data siswa terbaru untuk laporan
+    try {
+      final response = await http.get(
+        Uri.parse('${AppConfig.apiUrl}?action=getSiswaKelas&kelas=$kelas&id_lembaga=$idLembaga'),
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      );
+
+      final result = jsonDecode(response.body);
+      if (result['status'] != 'success') throw Exception("Gagal memuat data siswa");
+
+      List rawData = result['data'] ?? [];
+      
+      final pdf = pw.Document();
+
+      int totHadir = 0;
+      int totIzin = 0;
+      int totSakit = 0;
+      int totAlpa = 0;
+
+      List<List<String>> tableData = [];
+      for (int i = 0; i < rawData.length; i++) {
+        var s = rawData[i];
+        String nama = s['nama'] ?? s['Nama'] ?? '-';
+        String status = (s['status'] ?? 'Hadir').toString().toLowerCase();
+
+        String h = status == 'hadir' ? '1' : '0';
+        String iSt = status == 'izin' ? '1' : '0';
+        String sSt = status == 'sakit' ? '1' : '0';
+        String a = (status != 'hadir' && status != 'izin' && status != 'sakit') ? '1' : '0';
+
+        if (status == 'hadir') totHadir++;
+        else if (status == 'izin') totIzin++;
+        else if (status == 'sakit') totSakit++;
+        else totAlpa++;
+
+        tableData.add([
+          (i + 1).toString(),
+          nama,
+          h,
+          iSt,
+          sSt,
+          a,
+        ]);
+      }
+
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(32),
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text("LAPORAN REKAPITULASI ABSENSI SISWA", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 4),
+                pw.Text("Lembaga: ${AppConfig.namaLembaga}", style: const pw.TextStyle(fontSize: 12)),
+                pw.Text("Kelas: $kelas  |  Wali Kelas: $namaWali", style: const pw.TextStyle(fontSize: 12)),
+                pw.Text("Periode Rekap: $bulan $tahun", style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
+                pw.Divider(thickness: 1.5),
+                pw.SizedBox(height: 10),
+                pw.Table.fromTextArray(
+                  headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                  data: [
+                    ...tableData,
+                    // Baris Total di paling bawah
+                    ['TOTAL', '', totHadir.toString(), totIzin.toString(), totSakit.toString(), totAlpa.toString()]
+                  ],
+                  border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
+                  headerDecoration: const pw.BoxDecoration(color: PdfColor.fromInt(0xFF1E293B)),
+                  cellAlignment: pw.Alignment.centerLeft,
+                  cellAlignments: {
+                    0: pw.Alignment.center,
+                    2: pw.Alignment.center,
+                    3: pw.Alignment.center,
+                    4: pw.Alignment.center,
+                    5: pw.Alignment.center,
+                  },
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      await Printing.layoutPdf(
+        onPdf vznik: (PdfPageFormat format) async => pdf.save(),
+        name: 'Laporan_Absensi_Kelas_$kelas-$bulan-$tahun.pdf',
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal mencetak laporan: $e"), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  void _showFeatureDialog(BuildContext context, String title, String description) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -496,11 +676,8 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
               subtitle: "Cetak dan ekspor laporan kelas",
               color: const Color(0xFFDC2626),
               onTap: () {
-                _showFeatureDialog(
-                  context,
-                  "Laporan Kelas",
-                  "Fitur untuk mengunduh dan mencetak laporan resmi absensi dalam format PDF/Excel.",
-                );
+                // Memanggil dialog pilihan bulan & tahun sebelum cetak PDF
+                _showCetakLaporanDialog(context);
               },
             ),
           ],
@@ -662,7 +839,6 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
       String namaWaliKelas = widget.userData?['nama'] ?? '';
       String idLembaga = widget.userData?['id_lembaga'] ?? '';
 
-      print("Data siswa yang dikirim: $daftarSisamDinamic");
       final response = await http.post(
         Uri.parse(AppConfig.apiUrl),
         headers: {"Content-Type": "application/json"},
@@ -725,7 +901,8 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                        itemCount: daftarSisamDinamic.length,
+                        itemcount: daftarSisamDinamic.length,
+                        itemtype: (context, index) {},
                         itemBuilder: (context, index) {
                           var siswa = daftarSisamDinamic[index];
                           return Card(
