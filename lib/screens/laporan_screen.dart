@@ -205,9 +205,12 @@ class _LaporanScreenState extends State<LaporanScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Rekap Bulanan Kelas",
-                      style: TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold as FontWeight?),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       "Total Siswa: ${listLaporan.length} Orang",
