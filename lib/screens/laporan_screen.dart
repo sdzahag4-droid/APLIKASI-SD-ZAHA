@@ -107,16 +107,54 @@ class _LaporanScreenState extends State<LaporanScreen> {
     }
   }
 
-  // Fungsi untuk Membuat dan Menampilkan Pratinjau/Cetak PDF dengan Periode & Kolom Total
+  // Fungsi untuk Membuat dan Menampilkan Pratinjau/Cetak PDF dengan Baris Total di Bawah
   Future<void> _cetakPdfLaporan() async {
     final pdf = pw.Document();
     final namaWaliKelas = _getWaliKelas(widget.kelas);
     final String periodeTeks = _getJudulPeriode();
 
+    // Menghitung akumulasi total keseluruhan kelas untuk baris bawah
+    int totalHadirSemua = 0;
+    int totalIzinSemua = 0;
+    int totalSakitSemua = 0;
+    int totalAlpaSemua = 0;
+
+    for (var siswa in listLaporan) {
+      totalHadirSemua += int.tryParse(siswa['Hadir']?.toString() ?? '0') ?? 0;
+      totalIzinSemua += int.tryParse(siswa['Izin']?.toString() ?? '0') ?? 0;
+      totalSakitSemua += int.tryParse(siswa['Sakit']?.toString() ?? '0') ?? 0;
+      totalAlpaSemua += int.tryParse(siswa['Alpa']?.toString() ?? '0') ?? 0;
+    }
+
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
+          // Menyiapkan data baris tabel siswa
+          List<List<String>> dataTabel = List.generate(listLaporan.length, (index) {
+            final siswa = listLaporan[index];
+            final namaSiswa = siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama';
+            
+            return [
+              (index + 1).toString(),
+              namaSiswa,
+              siswa['Hadir']?.toString() ?? '0',
+              siswa['Izin']?.toString() ?? '0',
+              siswa['Sakit']?.toString() ?? '0',
+              siswa['Alpa']?.toString() ?? '0',
+            ];
+          });
+
+          // Menambahkan baris TOTAL di bagian paling bawah tabel
+          dataTabel.add([
+            '',
+            'TOTAL KESELURUHAN',
+            totalHadirSemua.toString(),
+            totalIzinSemua.toString(),
+            totalSakitSemua.toString(),
+            totalAlpaSemua.toString(),
+          ]);
+
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -136,29 +174,10 @@ class _LaporanScreenState extends State<LaporanScreen> {
               pw.Divider(thickness: 1.5),
               pw.SizedBox(height: 10),
               
-              // Tabel dengan Kolom Total Kehadiran
+              // Tabel dengan Kolom: No, Nama Siswa, Hadir, Izin, Sakit, Alpa (Total di baris bawah)
               pw.Table.fromTextArray(
-                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Total'],
-                data: List.generate(listLaporan.length, (index) {
-                  final siswa = listLaporan[index];
-                  final namaSiswa = siswa['Nama_Siswa'] ?? siswa['Nama'] ?? siswa['nama'] ?? 'Tanpa Nama';
-                  
-                  int hadir = int.tryParse(siswa['Hadir']?.toString() ?? '0') ?? 0;
-                  int izin = int.tryParse(siswa['Izin']?.toString() ?? '0') ?? 0;
-                  int sakit = int.tryParse(siswa['Sakit']?.toString() ?? '0') ?? 0;
-                  int alpa = int.tryParse(siswa['Alpa']?.toString() ?? '0') ?? 0;
-                  int totalKehadiran = hadir + izin + sakit + alpa;
-
-                  return [
-                    (index + 1).toString(),
-                    namaSiswa,
-                    hadir.toString(),
-                    izin.toString(),
-                    sakit.toString(),
-                    alpa.toString(),
-                    totalKehadiran.toString(), // Kolom Total Kehadiran
-                  ];
-                }),
+                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                data: dataTabel,
                 headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
                 headerDecoration: const pw.BoxDecoration(color: PdfColors.indigo900),
                 rowDecoration: const pw.BoxDecoration(
@@ -171,7 +190,6 @@ class _LaporanScreenState extends State<LaporanScreen> {
                   3: pw.Alignment.center,
                   4: pw.Alignment.center,
                   5: pw.Alignment.center,
-                  6: pw.Alignment.center,
                 },
               ),
             ],
