@@ -27,6 +27,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   // Variabel untuk menyimpan file foto selfie
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  final TextEditingController _keteranganController = TextEditingController();
 
   // Daftar pilihan status absensi guru beserta batasan jamnya
   final List<Map<String, dynamic>> _daftarStatus = [
@@ -148,6 +149,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
           "lat": lat,           
           "lng": lng,           
           "foto": fotoBase64 ?? "", // Kirim string base64 foto jika backend mendukung
+          "keterangan": _keteranganController.text,
         }),
       );
 
@@ -419,6 +421,14 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                     setState(() {
                       _selectedStatus = value!;
                       _imageFile = null; // Reset foto ketika ganti status
+                      TextField(
+                      controller: _keteranganController,
+                      decoration: const InputDecoration(
+                        labelText: 'Keterangan (Opsional)',
+                        hintText: 'Masukkan keterangan jika ada...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                       _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
                     });
                   },
