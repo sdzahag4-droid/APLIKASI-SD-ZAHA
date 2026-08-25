@@ -65,13 +65,19 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
           setState(() {
-            // Menyaring data berdasarkan kelas yang aktif
-            listRekap = (data['data'] as List).where((item) {
-              return item['Kelas']?.toString() == widget.kelas;
-            }).toList();
-            isLoading = false;
-          });
-        } else {
+                  // Menyaring data berdasarkan kelas yang aktif
+                  listRekap = (data['data'] as List).where((item) {
+                    return item['Kelas']?.toString() == widget.kelas;
+                  }).toList();
+
+                  // --- TAMBAHKAN PENGHITUNG STATUS DI SINI ---
+                  int hadir = listRekap.where((item) => item['Status']?.toString().toLowerCase() == 'hadir').length;
+                  int sakit = listRekap.where((item) => item['Status']?.toString().toLowerCase() == 'sakit').length;
+                  int alpa = listRekap.where((item) => item['Status']?.toString().toLowerCase() == 'alpa' || item['Status']?.toString().toLowerCase() == 'alpha').length;
+                  // -------------------------------------------
+
+                  isLoading = false;
+                });
           setState(() {
             isLoading = false;
           });
