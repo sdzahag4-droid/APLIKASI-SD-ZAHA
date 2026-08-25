@@ -583,7 +583,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                         child: _buildStatCard(
                           icon: Icons.check_circle,
                           label: "Hadir",
-                          value: '$totalHadir'
+                          value: '$totalHadir',
                           color: Colors.green.shade700,
                           bgColor: Colors.green.shade50,
                         ),
@@ -593,7 +593,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                         child: _buildStatCard(
                           icon: Icons.healing,
                           label: "Sakit",
-                          value: '$totalSakit'
+                          value: '$totalSakit',
                           color: Colors.orange.shade700,
                           bgColor: Colors.orange.shade50,
                         ),
@@ -603,7 +603,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                         child: _buildStatCard(
                           icon: Icons.info,
                           label: "Izin",
-                          value: '$totalIzin'
+                          value: '$totalIzin',
                           color: Colors.amber.shade800,
                           bgColor: Colors.amber.shade50,
                         ),
@@ -613,7 +613,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                         child: _buildStatCard(
                           icon: Icons.cancel,
                           label: "Alpa",
-                          value: '$totalAlpa'
+                          value: '$totalAlpa',
                           color: Colors.red.shade700,
                           bgColor: Colors.red.shade50,
                         ),
