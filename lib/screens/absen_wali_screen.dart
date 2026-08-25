@@ -57,18 +57,21 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         int izin = 0;
         int alpa = 0;
 
-        for (var siswa in dataSiswa) {
-          String status = (siswa['status'] ?? 'Hadir').toString().toLowerCase();
-          if (status == 'hadir') {
-            hadir++;
-          } else if (status == 'sakit') { // <-- Khusus Sakit
-            sakit++;
-          } else if (status == 'izin') {  // <-- Khusus Izin
-            izin++;
-          } else {
-            alpa++;
-          }
+      for (var siswa in dataSiswa) {
+        // Cek berbagai kemungkinan nama field dari database (status, Status, Keterangan, dll)
+        String rawStatus = siswa['status'] ?? siswa['Status'] ?? siswa['keterangan'] ?? siswa['Keterangan'] ?? 'Hadir';
+        String status = rawStatus.toString().toLowerCase();
+
+        if (status == 'hadir') {
+          hadir++;
+        } else if (status == 'sakit') {
+          sakit++;
+        } else if (status == 'izin') {
+          izin++;
+        } else {
+          alpa++;
         }
+      }
 
         setState(() {
           totalSiswa = dataSiswa.length;
