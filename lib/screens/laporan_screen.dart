@@ -159,6 +159,11 @@ class _LaporanScreenState extends State<LaporanScreen> {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
+                "SD ZAINUL HASAN GENGGONG",
+                style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 2),
+              pw.Text(
                 "LAPORAN REKAPITULASI ABSENSI SISWA",
                 style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
               ),
