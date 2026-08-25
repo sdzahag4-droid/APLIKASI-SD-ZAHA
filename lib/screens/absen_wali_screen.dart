@@ -35,7 +35,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     _fetchRingkasanAbsen();
   }
 
-  // Fungsi untuk mengambil ringkasan data siswa & absensi berdasarkan kelas guru aktif
   Future<void> _fetchRingkasanAbsen() async {
     setState(() => _isLoadingSummary = true);
     try {
@@ -75,7 +74,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         });
       }
     } catch (e) {
-      // Tangani error senyap jika gagal
+      // Tangani error senyap
     } finally {
       if (mounted) setState(() => _isLoadingSummary = false);
     }
@@ -249,7 +248,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-  // Dialog untuk Pilihan Bulan & Tahun sebelum cetak Laporan PDF
   void _showCetakLaporanDialog(BuildContext context) {
     String selectedBulan = "Januari";
     String selectedTahun = "2026";
@@ -323,13 +321,11 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
     );
   }
 
-  // Fungsi Pembuatan PDF Laporan Dilengkapi Baris Total dan Keterangan Bulan/Tahun
   Future<void> _generateAndPrintPdf(String bulan, String tahun) async {
     String kelas = currentUser['kelas'] ?? '5A';
     String namaWali = currentUser['nama'] ?? 'Wali Kelas';
     String idLembaga = currentUser['id_lembaga'] ?? '';
 
-    // Ambil data siswa terbaru untuk laporan
     try {
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}?action=getSiswaKelas&kelas=$kelas&id_lembaga=$idLembaga'),
@@ -393,7 +389,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                   headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
                   data: [
                     ...tableData,
-                    // Baris Total di paling bawah
                     ['TOTAL', '', totHadir.toString(), totIzin.toString(), totSakit.toString(), totAlpa.toString()]
                   ],
                   border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
@@ -414,8 +409,9 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         ),
       );
 
+      // PERBAIKAN: Menggunakan onLayout alih-alih onPdf vznik
       await Printing.layoutPdf(
-        onPdf vznik: (PdfPageFormat format) async => pdf.save(),
+        onLayout: (PdfPageFormat format) async => pdf.save(),
         name: 'Laporan_Absensi_Kelas_$kelas-$bulan-$tahun.pdf',
       );
 
@@ -676,7 +672,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
               subtitle: "Cetak dan ekspor laporan kelas",
               color: const Color(0xFFDC2626),
               onTap: () {
-                // Memanggil dialog pilihan bulan & tahun sebelum cetak PDF
                 _showCetakLaporanDialog(context);
               },
             ),
@@ -901,8 +896,8 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                        itemcount: daftarSisamDinamic.length,
-                        itemtype: (context, index) {},
+                        // PERBAIKAN: Menggunakan itemCount yang benar
+                        itemCount: daftarSisamDinamic.length,
                         itemBuilder: (context, index) {
                           var siswa = daftarSisamDinamic[index];
                           return Card(
