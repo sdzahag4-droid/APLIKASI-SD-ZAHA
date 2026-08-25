@@ -109,13 +109,21 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
             children: [
               // --- JUDUL UTAMA ---
               pw.Text(
-                "LAPORAN REKAPITULASI ABSENSI GURU & PEGAWAI",
-                style: pw.TextStyle(
-                  fontSize: 16,
-                  fontWeight: pw.FontWeight.bold,
+                  "SD ZAINUL HASAN GENGGONG",
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
                 ),
-              ),
-              pw.SizedBox(height: 4),
+                pw.SizedBox(height: 2),
+                pw.Text(
+                  "LAPORAN REKAPITULASI ABSENSI GURU & PEGAWAI",
+                  style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 4),
 
               // --- KETERANGAN PERIODE BULAN & TAHUN ---
               pw.Text(
