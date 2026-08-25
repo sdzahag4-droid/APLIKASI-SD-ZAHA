@@ -48,6 +48,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
       );
 
       final result = jsonDecode(response.body);
+      print("RESPONS SERVER MENTAH: $result");
 
       if (result['status'] == 'success') {
         List dataSiswa = result['data'] ?? [];
