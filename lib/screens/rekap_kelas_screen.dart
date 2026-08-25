@@ -43,10 +43,14 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
 
   // Mengambil string bulan untuk judul periode dari data rekap jika tersedia
   String _getJudulPeriode() {
-    if (listRekap.isNotEmpty && listRekap[0]['Bulan'] != null) {
-      return _formatPeriode(listRekap[0]['Bulan'].toString());
+    if (listRekap.isNotEmpty) {
+      for (var item in listRekap) {
+        if (item['Bulan'] != null && item['Bulan'].toString().isNotEmpty && item['Bulan'].toString() != '-') {
+          return _formatPeriode(item['Bulan'].toString());
+        }
+      }
     }
-    return "Agustus 2026";
+    return "Agustus 2026"; // Default fallback yang rapi
   }
 
   Future<void> _fetchRekapData() async {
@@ -55,7 +59,7 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse("$iUrl?action=getRekapAbsenSiswa&kelas=${widget.kelas}"),
+        Uri.parse("${AppConfig.apiUrl}?action=getRekapAbsenSiswa&kelas=${widget.kelas}"),
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -107,7 +111,7 @@ class _RekapKelasScreenState extends State<RekapKelasScreen> {
               pw.Divider(thickness: 1.5),
               pw.SizedBox(height: 10),
               
-              // Tabel dengan Kolom Total Kehadiran Ditambahkan
+              // Tabel dengan Kolom Total Kehadiran
               pw.Table.fromTextArray(
                 headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Total'],
                 data: List.generate(listRekap.length, (index) {
