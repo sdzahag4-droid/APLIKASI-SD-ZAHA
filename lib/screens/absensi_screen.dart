@@ -418,10 +418,14 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                     );
                   }).toList(),
                   onChanged: (value) {
-                    setState(() {
-                      _selectedStatus = value!;
-                      _imageFile = null; // Reset foto ketika ganti status
-                      TextField(
+                        setState(() {
+                          _selectedStatus = value!;
+                          _imageFile = null; // Reset foto ketika ganti status
+                          _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
+                        });
+                      },
+                    const SizedBox(height: 12),
+                    TextField(
                       controller: _keteranganController,
                       decoration: const InputDecoration(
                         labelText: 'Keterangan (Opsional)',
@@ -429,14 +433,8 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                      _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
-                    });
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
+                    
+                    const SizedBox(height: 20),
             // Kotak Informasi Status Pesan
             Container(
               padding: const EdgeInsets.all(16),
