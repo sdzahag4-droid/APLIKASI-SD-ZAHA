@@ -386,9 +386,9 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text("LAPORAN REKAPITULASI ABSENSI SISWA", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                pw.Text("SD ZAINUL HASAN GENGGONG", style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                pw.Text("LAPORAN REKAPITULASI ABSENSI SISWA", style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 4),
-                pw.Text("Lembaga: ${AppConfig.namaLembaga}", style: const pw.TextStyle(fontSize: 12)),
                 pw.Text("Kelas: $kelas  |  Wali Kelas: $namaWali", style: const pw.TextStyle(fontSize: 12)),
                 pw.Text("Periode Rekap: $bulan $tahun", style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.blue800)),
                 pw.Divider(thickness: 1.5),
