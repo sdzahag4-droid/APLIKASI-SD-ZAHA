@@ -57,21 +57,20 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         int izin = 0;
         int alpa = 0;
 
-      for (var siswa in dataSiswa) {
-        // Cek berbagai kemungkinan nama field dari database (status, Status, Keterangan, dll)
-        String rawStatus = siswa['status'] ?? siswa['Status'] ?? siswa['keterangan'] ?? siswa['Keterangan'] ?? 'Hadir';
-        String status = rawStatus.toString().toLowerCase();
+        for (var siswa in dataSiswa) {
+          String rawStatus = siswa['status'] ?? siswa['Status'] ?? siswa['keterangan'] ?? siswa['Keterangan'] ?? 'Hadir';
+          String status = rawStatus.toString().toLowerCase();
 
-        if (status == 'hadir') {
-          hadir++;
-        } else if (status == 'sakit') {
-          sakit++;
-        } else if (status == 'izin') {
-          izin++;
-        } else {
-          alpa++;
+          if (status == 'hadir') {
+            hadir++;
+          } else if (status == 'sakit') {
+            sakit++;
+          } else if (status == 'izin') {
+            izin++;
+          } else {
+            alpa++;
+          }
         }
-      }
 
         setState(() {
           totalSiswa = dataSiswa.length;
@@ -417,7 +416,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
         ),
       );
 
-      // PERBAIKAN: Menggunakan onLayout alih-alih onPdf vznik
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
         name: 'Laporan_Absensi_Kelas_$kelas-$bulan-$tahun.pdf',
@@ -495,22 +493,6 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                   )
                 ],
               ),
-              Card(
-              child: ListTile(
-                leading: const Icon(Icons.assignment_turned_in, color: Colors.blue),
-                title: const Text('Rekap Harian Siswa'),
-                subtitle: const Text('Lihat kehadiran siswa per hari'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RekapHarianWaliScreen(userData: widget.userData),
-                    ),
-                  );
-                },
-              ),
-            ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -930,7 +912,6 @@ class _AbsensiSiswaScreenState extends State<AbsensiSiswaScreen> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                        // PERBAIKAN: Menggunakan itemCount yang benar
                         itemCount: daftarSisamDinamic.length,
                         itemBuilder: (context, index) {
                           var siswa = daftarSisamDinamic[index];
