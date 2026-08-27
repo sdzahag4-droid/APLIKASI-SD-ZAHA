@@ -20,10 +20,10 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   bool _isLoading = false;
   String _statusMessage = 'Pilih jenis kehadiran, lalu tekan tombol di bawah.';
   bool _isSuccess = false;
-  
+
   // Status absensi yang dipilih (Default: Absen Masuk)
   String _selectedStatus = 'Absen Masuk';
-  
+
   // Variabel untuk menyimpan file foto selfie
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -86,14 +86,14 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       'color': Colors.red
     },
     {
-        'title': 'Absen Pulang',
-        'subtitle': 'Wajib Kamera, GPS & Jam 10:00 - 14:00',
-        'pakaiGps': true,
-        'pakaiKamera': true,
-        'jamMulai': 10.0, 
-        'jamSelesai': 14.0, 
-        'color': Colors.purple,
-      },
+      'title': 'Absen Pulang',
+      'subtitle': 'Wajib Kamera, GPS & Jam 10:00 - 14:00',
+      'pakaiGps': true,
+      'pakaiKamera': true,
+      'jamMulai': 10.0, 
+      'jamSelesai': 14.0, 
+      'color': Colors.purple,
+    },
   ];
 
   // Helper untuk mengubah angka desimal jam menjadi string "HH:MM"
@@ -128,7 +128,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   }
 
   // Fungsi untuk mengirim data absensi ke server (Google Sheets)
-  Future<void> _kirimAbsensiKeServer({
+  Future<void> _kirimAbsensikeServer({
     required String nama,
     required String status,
     required dynamic jarak,
@@ -142,12 +142,12 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "action": "simpan_absensi",
-          "nama": nama,         
+          "nama": nama,        
           "jabatan": "Guru",    
-          "status": status,     
-          "jarak": jarak,       
-          "lat": lat,           
-          "lng": lng,           
+          "status": status,    
+          "jarak": jarak,      
+          "lat": lat,          
+          "lng": lng,          
           "foto": fotoBase64 ?? "", // Kirim string base64 foto jika backend mendukung
           "keterangan": _keteranganController.text,
         }),
@@ -171,7 +171,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   // Fungsi proses utama saat tombol submit ditekan
   Future<void> _prosesAbsensi() async {
     final String namaUser = widget.userData['nama'] ?? widget.userData['username'] ?? 'Guru/Karyawan';
-    
+
     // Ambil konfigurasi status yang dipilih
     final statusConfig = _daftarStatus.firstWhere((element) => element['title'] == _selectedStatus);
     bool pakaiGps = statusConfig['pakaiGps'];
@@ -202,7 +202,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         _imageFile = null; // Reset foto
       });
 
-      await _kirimAbsensiKeServer(
+      await _kirimAbsensikeServer(
         nama: namaUser,
         status: _selectedStatus,
         jarak: "-",
@@ -282,41 +282,43 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-            double schoolLat = -7.87930; // Koordinat sekolah
-            double schoolLng = 113.375122; // Koordinat sekolah
-            double maxRadiusMeter = 70.0;
+      double schoolLat = -7.87930; // Koordinat sekolah (bisa diganti sesuai koordinat riil)
+      double schoolLng = 113.375122; // Koordinat sekolah (bisa diganti sesuai koordinat riil)
+      double maxRadiusMeter = 70.0;
 
-            double distanceInMeters = Geolocator.distanceBetween(
-              position.latitude,
-              position.longitude,
-              schoolLat,
-              schoolLng,
-            );
+      double distanceInMeters = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        schoolLat,
+        schoolLng,
+      );
 
-            // Bulatkan jarak agar tampil pas (misal: 12 meter)
-            int jarakBulat = distanceInMeters.round();
+      // Bulatkan jarak agar tampil pas (misal: 12 meter)
+      int jarakBulat = distanceInMeters.round();
 
-            setState(() {
-              _isLoading = false;
-              if (distanceInMeters <= maxRadiusMeter) {
-                _isSuccess = true;
-                _statusMessage = 'Absen Berhasil! Dalam area sekolah ($jarakBulat meter dari sekolah)';
-              } else {
-                _isSuccess = false;
-                _statusMessage = 'Absen Gagal! Anda berada di luar radius sekolah ($jarakBulat meter). Maksimal 70 meter.';
-              }
-            });
+      setState(() {
+        _isLoading = false;
+        if (distanceInMeters <= maxRadiusMeter) {
+          _isSuccess = true;
+          _statusMessage = 'Absen Berhasil! Dalam area sekolah ($jarakBulat meter dari sekolah)';
+        } else {
+          _isSuccess = false;
+          _statusMessage = 'Absen Gagal! Anda berada di luar radius sekolah ($jarakBulat meter). Maksimal 70 meter.';
+        }
+      });
+
       if (_isSuccess) {
-        // Konversi foto ke base64 jika ingin dikirim (opsional, sesuaikan dengan backend GAS Anda)
+        // Konversi foto ke base64 jika ingin dikirim
         String? base64Image;
         if (_imageFile != null) {
           List<int> imageBytes = await _imageFile!.readAsBytes();
           base64Image = base64Encode(imageBytes);
         } 
-      await _kirimAbsensikeServer(
+        
+        await _kirimAbsensikeServer(
           nama: namaUser,
           status: _selectedStatus,
-          jarak: "$jarakBulat meter dari sekolah", // Menggunakan jarak dinamis sesuai posisi riil
+          jarak: "$jarakBulat meter dari sekolah",
           lat: position.latitude,
           lng: position.longitude,
           fotoBase64: base64Image,
@@ -416,25 +418,26 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                     );
                   }).toList(),
                   onChanged: (value) {
-                        setState(() {
-                          _selectedStatus = value!;
-                          _imageFile = null; // Reset foto ketika ganti status
-                          _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
-                        });
-                      },
-                    ),
-                  ),
-                ), //
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _keteranganController,
-                      decoration: const InputDecoration(
-                        labelText: 'Keterangan (Opsional)',
-                        hintText: 'Masukkan keterangan jika ada...',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                    setState(() {
+                      _selectedStatus = value!;
+                      _imageFile = null; // Reset foto ketika ganti status
+                      _statusMessage = 'Dipilih: $_selectedStatus. Tekan tombol untuk mengirim.';
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _keteranganController,
+              decoration: const InputDecoration(
+                labelText: 'Keterangan (Opsional)',
+                hintText: 'Masukkan keterangan jika ada...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
             // Kotak Informasi Status Pesan
             Container(
               padding: const EdgeInsets.all(16),
