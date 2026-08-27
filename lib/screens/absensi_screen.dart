@@ -282,30 +282,30 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      double schoolLat = -7.787930; // Koordinat sekolah
-      double schoolLng = 113.375122; // Koordinat sekolah
-      double maxRadiusMeter = 70.0;
+      double schoolLat = -7.87930; // Koordinat sekolah
+            double schoolLng = 113.375122; // Koordinat sekolah
+            double maxRadiusMeter = 70.0;
 
-      double distanceInMeters = Geolocator.distanceBetween(
-        position.latitude,
-        position.longitude,
-        schoolLat,
-        schoolLng,
-      );
+            double distanceInMeters = Geolocator.distanceBetween(
+              position.latitude,
+              position.longitude,
+              schoolLat,
+              schoolLng,
+            );
 
-      setState(() {
-        _isLoading = false;
-        if (distanceInMeters <= maxRadiusMeter) {
-          _isSuccess = true;
-          _statusMessage = 'Absen Berhasil! Dalam area sekolah '
-              '(${distanceInMeters.toStringAsFixed(1)} meter dari titik pusat).';
-        } else {
-          _isSuccess = false;
-          _statusMessage = 'Absen Gagal! Anda di luar area sekolah '
-              '(${distanceInMeters.toStringAsFixed(1)} meter). Maksimal radius 70 meter.';
-        }
-      });
+            // Bulatkan jarak agar tampil pas (misal: 12 meter)
+            int jarakBulat = distanceInMeters.round();
 
+            setState(() {
+              _isLoading = false;
+              if (distanceInMeters <= maxRadiusMeter) {
+                _isSuccess = true;
+                _statusMessage = 'Absen Berhasil! Dalam area sekolah ($jarakBulat meter dari sekolah)';
+              } else {
+                _isSuccess = false;
+                _statusMessage = 'Absen Gagal! Anda berada di luar radius sekolah ($jarakBulat meter). Maksimal 70 meter.';
+              }
+            });
       if (_isSuccess) {
         // Konversi foto ke base64 jika ingin dikirim (opsional, sesuaikan dengan backend GAS Anda)
         String? base64Image;
