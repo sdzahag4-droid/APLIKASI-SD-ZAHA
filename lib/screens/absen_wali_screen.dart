@@ -495,6 +495,22 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                   )
                 ],
               ),
+              Card(
+              child: ListTile(
+                leading: const Icon(Icons.assignment_turned_in, color: Colors.blue),
+                title: const Text('Rekap Harian Siswa'),
+                subtitle: const Text('Lihat kehadiran siswa per hari'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RekapHarianWaliScreen(userData: widget.userData),
+                    ),
+                  );
+                },
+              ),
+            ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
