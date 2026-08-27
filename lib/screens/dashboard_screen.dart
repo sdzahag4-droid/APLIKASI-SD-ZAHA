@@ -21,6 +21,7 @@ import 'data_siswa_screen.dart';
 import 'rekap_kelas_screen.dart';
 import 'laporan_screen.dart';
 import 'rekap_absen_guru_screen.dart';
+import 'absen_mapel_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -463,22 +464,43 @@ void initState() {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               children: [
-                  // Menu Absensi Guru (Hanya tampil jika bukan Siswa)
-                if (widget.userData['role'] != 'Siswa' && widget.userData['jabatan'] != 'Siswa') 
-                  _buildMenuTile(
-                    context,
-                    Icons.how_to_reg, // Ikon untuk Absensi Guru
-                    "Absensi Guru",
-                    Colors.green, // Warna ikon
-                    () {
-                      Navigator.push(
+                    // 1. Menu Khusus Absen Mapel (Hanya untuk Guru Mapel, bukan Wali Kelas/Siswa/Admin)
+                    if (widget.userData['jabatan'] != null && 
+                        !widget.userData['jabatan'].toString().toLowerCase().contains('wali kelas') &&
+                        widget.userData['role'] != 'Siswa' && 
+                        widget.userData['role'] != 'Admin') ...[
+                      _buildMenuTile(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => AbsensiScreen(userData: widget.userData),
-                        ),
-                      );
-                    },
-                  ),
+                        Icons.menu_book, 
+                        "Absen Mapel",
+                        Colors.blue, 
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AbsenMapelScreen(userData: widget.userData),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                    // 2. Menu Absensi Guru (Tampil untuk Guru & Admin, bukan Siswa)
+                    if (widget.userData['role'] != 'Siswa' && widget.userData['jabatan'] != 'Siswa') ...[
+                      _buildMenuTile(
+                        context,
+                        Icons.how_to_reg, 
+                        "Absensi Guru",
+                        Colors.green, 
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AbsensiScreen(userData: widget.userData),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                 if (widget.userData['role'] == 'Admin' || widget.userData['jabatan'] == 'Admin') ...[
                   _buildMenuTile(
                     context,
