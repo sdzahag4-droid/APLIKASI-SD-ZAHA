@@ -312,8 +312,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         if (_imageFile != null) {
           List<int> imageBytes = await _imageFile!.readAsBytes();
           base64Image = base64Encode(imageBytes);
-        }
-
+        } 
       await _kirimAbsensikeServer(
           nama: namaUser,
           status: _selectedStatus,
@@ -322,7 +321,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
           lng: position.longitude,
           fotoBase64: base64Image,
         );
-
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
