@@ -205,7 +205,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       await _kirimAbsensiKeServer(
         nama: namaUser,
         status: _selectedStatus,
-        jarak: 0, 
+        jarak: "-",
         lat: 0,   
         lng: 0,   
       );
@@ -282,7 +282,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      double schoolLat = -7.87930; // Koordinat sekolah
+            double schoolLat = -7.87930; // Koordinat sekolah
             double schoolLng = 113.375122; // Koordinat sekolah
             double maxRadiusMeter = 70.0;
 
@@ -314,15 +314,14 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
           base64Image = base64Encode(imageBytes);
         }
 
-        await _kirimAbsensiKeServer(
+      await _kirimAbsensikeServer(
           nama: namaUser,
           status: _selectedStatus,
-          jarak: double.parse(distanceInMeters.toStringAsFixed(2)),
+          jarak: "$jarakBulat meter dari sekolah", // Menggunakan jarak dinamis sesuai posisi riil
           lat: position.latitude,
           lng: position.longitude,
           fotoBase64: base64Image,
         );
-      }
 
     } catch (e) {
       setState(() {
