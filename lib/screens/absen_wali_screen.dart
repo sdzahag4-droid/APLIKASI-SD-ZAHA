@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../config.dart';
 import 'data_siswa_screen.dart';
+import 'rekap_harian_wali_screen.dart';
 
 class AbsenWaliScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -661,6 +662,22 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DataSiswaScreen(kelas: kelas),
+                  ),
+                );
+              },
+            ),
+
+            _buildMenuItem(
+              context,
+              icon: Icons.assignment_turned_in,
+              title: "Rekap Harian Siswa",
+              subtitle: "Lihat kehadiran siswa per hari",
+              color: const Color(0xFF4CAF50), // Contoh warna hijau, atau sesuaikan
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RekapHarianWaliScreen(kelas: kelas), // Pastikan nama screen kelas tujuannya sesuai
                   ),
                 );
               },
