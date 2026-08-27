@@ -478,7 +478,9 @@ void initState() {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AbsenMapelScreen(namaGuru: widget.userData['nama'] ?? 'Guru Mapel'),
+                              builder: (context) => AbsenMapelScreen(
+  namaGuru: widget.userData['nama'] ?? widget.userData['nama_lengkap'] ?? 'Guru Mapel',
+),
                             ),
                           );
                         },
