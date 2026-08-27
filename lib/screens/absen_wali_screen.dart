@@ -677,7 +677,7 @@ class _AbsenWaliScreenState extends State<AbsenWaliScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RekapHarianWaliScreen(kelas: kelas), // Pastikan nama screen kelas tujuannya sesuai
+                    builder: (context) => RekapHarianWaliScreen(userData: userData),
                   ),
                 );
               },
