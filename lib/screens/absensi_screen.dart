@@ -135,6 +135,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
     required dynamic lat,
     required dynamic lng,
     String? fotoBase64, // Tambahan parameter untuk mengirim foto jika diperlukan
+    String? alasan,
   }) async {
     try {
       final response = await http.post(
@@ -147,9 +148,9 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
           "status": status,    
           "jarak": jarak,      
           "lat": lat,          
-          "lng": lng,          
+          "lng": lng,  
+          "alasan": alasan ?? "-",        
           "foto": fotoBase64 ?? "", // Kirim string base64 foto jika backend mendukung
-          "keterangan": _keteranganController.text,
         }),
       );
 
@@ -208,6 +209,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
         jarak: "-",
         lat: 0,   
         lng: 0,   
+        alasan: _keteranganController.text.isNotEmpty ? _keteranganController.text : "-",
       );
 
       setState(() {
