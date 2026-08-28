@@ -48,7 +48,7 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
     });
 
     try {
-      final response = await http.get(Uri.parse('${Config.urlWebApps}?action=get_siswa&kelas=$kelas'));
+      final response = await http.get(Uri.parse('${AppConfig.apiUrl}?action=get_siswa&kelas=$kelas'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -100,7 +100,7 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
         String nilaiInput = _nilaiControllers[i].text;
 
         final response = await http.post(
-          Uri.parse(Config.urlWebApps),
+          Uri.parse(AppConfig.apiUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: {
             'action': 'simpan_absen_mapel',
