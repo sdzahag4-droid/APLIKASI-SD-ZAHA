@@ -14,20 +14,31 @@ class AbsenMapelScreen extends StatefulWidget {
 class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
   bool isLoading = false;
   bool isLoadingSiswa = false;
-  
+
   String? selectedKelas = '1A';
   String selectedMapel = 'Matematika';
-  
+
   // Daftar kelas disesuaikan dengan format di tab Siswa (misal: 1A, 1B, dst.)
   List<String> listKelas = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B'];
   List<String> listMapel = ['Matematika', 'Bahasa Indonesia', 'IPA', 'IPS', 'PPKn', 'PAI', 'PJOK', 'TIK'];
 
   List<Map<String, dynamic>> listSiswa = [];
+  
+  // Menyimpan controller untuk textfield nilai agar aman saat di-scroll/rebuild
+  final List<TextEditingController> _nilaiControllers = [];
 
   @override
   void initState() {
     super.initState();
     fetchSiswaByKelas(selectedKelas!);
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _nilaiControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   // Fungsi menarik data siswa dari Google Sheets berdasarkan kelas
@@ -38,13 +49,21 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
 
     try {
       final response = await http.get(Uri.parse('${Config.urlWebApps}?action=get_siswa&kelas=$kelas'));
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
           List tempData = data['data'];
+          
+          // Bersihkan controller lama
+          for (var c in _nilaiControllers) {
+            c.dispose();
+          }
+          _nilaiControllers.clear();
+
           setState(() {
             listSiswa = tempData.map((siswa) {
+              _nilaiControllers.add(TextEditingController(text: ''));
               return {
                 'nama_siswa': siswa['nama'] ?? 'Tanpa Nama',
                 'status_kehadiran': 'Hadir',
@@ -75,7 +94,11 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
     int successCount = 0;
 
     try {
-      for (var siswa in listSiswa) {
+      for (int i = 0; i < listSiswa.length; i++) {
+        var siswa = listSiswa[i];
+        // Ambil nilai terbaru dari controller
+        String nilaiInput = _nilaiControllers[i].text;
+
         final response = await http.post(
           Uri.parse(Config.urlWebApps),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -87,7 +110,7 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
             'nama_siswa': siswa['nama_siswa'],
             'status_kehadiran': siswa['status_kehadiran'],
             'keterangan': siswa['keterangan'],
-            'nilai': siswa['nilai'],
+            'nilai': nilaiInput,
           },
         );
 
@@ -178,6 +201,14 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
                           itemCount: listSiswa.length,
                           itemBuilder: (context, index) {
                             final siswa = listSiswa[index];
+                            
+                            // Pastikan value dropdown ada di dalam list item yang valid
+                            String currentStatus = siswa['status_kehadiran'];
+                            List<String> validStatuses = ['Hadir', 'Izin', 'Sakit', 'Alpa'];
+                            if (!validStatuses.contains(currentStatus)) {
+                              currentStatus = 'Hadir';
+                            }
+
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               elevation: 2,
@@ -197,13 +228,13 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
                                         Expanded(
                                           flex: 2,
                                           child: DropdownButtonFormField<String>(
-                                            value: siswa['status_kehadiran'],
+                                            value: currentStatus,
                                             decoration: const InputDecoration(
                                               isDense: true,
                                               labelText: 'Status',
                                               border: OutlineInputBorder(),
                                             ),
-                                            items: ['Hadir', 'Izin', 'Sakit', 'Alpa'].map((status) {
+                                            items: validStatuses.map((status) {
                                               return DropdownMenuItem(value: status, child: Text(status));
                                             }).toList(),
                                             onChanged: (val) {
@@ -218,16 +249,13 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
                                         Expanded(
                                           flex: 1,
                                           child: TextFormField(
-                                            initialValue: siswa['nilai'],
+                                            controller: _nilaiControllers[index],
                                             keyboardType: TextInputType.number,
                                             decoration: const InputDecoration(
                                               isDense: true,
                                               labelText: 'Nilai',
                                               border: OutlineInputBorder(),
                                             ),
-                                            onChanged: (val) {
-                                              listSiswa[index]['nilai'] = val;
-                                            },
                                           ),
                                         ),
                                       ],
