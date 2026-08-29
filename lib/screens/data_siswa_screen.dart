@@ -33,6 +33,9 @@ class _DataSisnaScreenState extends State<DataSiswaScreen> {
         }),
       );
 
+      // Cek apakah widget masih aktif sebelum mengubah state
+      if (!mounted) return;
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
@@ -57,11 +60,13 @@ class _DataSisnaScreenState extends State<DataSiswaScreen> {
             return true; // Loloskan hanya untuk siswa
           }).toList();
 
+          if (!mounted) return;
           setState(() {
             listSiswa = filteredData;
             isLoading = false;
           });
         } else {
+          if (!mounted) return;
           setState(() {
             isLoading = false;
           });
@@ -69,6 +74,7 @@ class _DataSisnaScreenState extends State<DataSiswaScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
