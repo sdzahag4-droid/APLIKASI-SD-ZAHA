@@ -181,7 +181,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
               
               // Tabel dengan Kolom: No, Nama Siswa, Hadir, Izin, Sakit, Alpa (Total di baris bawah)
               pw.Table.fromTextArray(
-                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa'],
+                headers: ['No', 'Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Nilai'],
                 data: dataTabel,
                 headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
                 headerDecoration: const pw.BoxDecoration(color: PdfColors.indigo900),
@@ -195,6 +195,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                   3: pw.Alignment.center,
                   4: pw.Alignment.center,
                   5: pw.Alignment.center,
+                  6: pw.Alignment.center,
                 },
               ),
             ],
