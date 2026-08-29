@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // Wajib ada agar kIsWeb bisa dikenali
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -361,15 +362,22 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
                       border: Border.all(color: Colors.green, width: 3),
                       color: Colors.grey.shade200,
                     ),
-                    child: _imageFile != null
-                        ? ClipOval(
-                            child: Image.file(
-                              _imageFile!,
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.cover,
-                            ),
-                          )
+                  child: _imageFile != null
+                      ? ClipOval(
+                          child: kIsWeb
+                              ? Image.network(
+                                  _imageFile!.path, // Untuk Flutter Web (menggunakan URL path lokal browser)
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  File(_imageFile!.path), // Untuk Android / iOS
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                        )
                         : const Icon(Icons.person, size: 70, color: Colors.grey),
                   ),
                 ],
