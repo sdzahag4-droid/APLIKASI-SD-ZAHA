@@ -65,7 +65,7 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
             listSiswa = tempData.map((siswa) {
               _nilaiControllers.add(TextEditingController(text: ''));
               return {
-                'nama_siswa': siswa['nama'] ?? 'Tanpa Nama',
+                'nama_siswa': siswa['nama_siswa'] ?? 'Tanpa Nama',
                 'status_kehadiran': 'Hadir',
                 'keterangan': '-',
                 'nilai': '',
