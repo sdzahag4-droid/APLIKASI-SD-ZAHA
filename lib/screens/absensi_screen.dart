@@ -24,8 +24,8 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
   // Status absensi yang dipilih (Default: Absen Masuk)
   String _selectedStatus = 'Absen Masuk';
 
-  // Variabel untuk menyimpan file foto selfie
-  File? _imageFile;
+  // Variabel untuk menyimpan file foto selfie menggunakan XFile (Aman untuk Web)
+  XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _keteranganController = TextEditingController();
 
@@ -114,7 +114,7 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
 
         if (photo != null) {
           setState(() {
-            _imageFile = File(photo.path);
+            _imageFile = photo;
           });
           return true;
         }
