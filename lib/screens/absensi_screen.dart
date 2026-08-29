@@ -103,29 +103,29 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
     return '${jam.toString().padLeft(2, '0')}:${menit.toString().padLeft(2, '0')}';
   }
 
-  // Fungsi untuk mengambil foto menggunakan Kamera Depan (Selfie)
-  Future<bool> _ambilFotoSelfie() async {
-    try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.front, // Mengarahkan ke kamera depan
-        imageQuality: 50, // Kompres kualitas gambar agar tidak terlalu besar ukurannya
-      );
+    // Fungsi untuk mengambil foto menggunakan Kamera Depan (Selfie)
+    Future<bool> _ambilFotoSelfie() async {
+      try {
+        final XFile? photo = await _picker.pickImage(
+          source: ImageSource.camera,
+          preferredCameraDevice: CameraDevice.front, // Mengarahkan ke kamera depan
+          imageQuality: 50, // Kompres kualitas gambar agar tidak terlalu besar ukurannya
+        );
 
-      if (photo != null) {
+        if (photo != null) {
+          setState(() {
+            _imageFile = File(photo.path);
+          });
+          return true;
+        }
+        return false;
+      } catch (e) {
         setState(() {
-          _imageFile = File(photo.path);
+          _statusMessage = 'Gagal membuka kamera: $e';
         });
-        return true;
+        return false;
       }
-      return false;
-    } catch (e) {
-      setState(() {
-        _statusMessage = 'Gagal membuka kamera: $e';
-      });
-      return false;
     }
-  }
 
   // Fungsi untuk mengirim data absensi ke server (Google Sheets)
   Future<void> _kirimAbsensikeServer({
