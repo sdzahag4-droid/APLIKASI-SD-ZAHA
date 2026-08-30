@@ -15,11 +15,18 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
   bool isLoading = false;
   bool isLoadingSiswa = false;
 
-  String? selectedKelas = '1A';
+  String? selectedKelas = 'Kelas 1A';
   String selectedMapel = 'Matematika';
 
   // Daftar kelas disesuaikan dengan format di tab Siswa (misal: 1A, 1B, dst.)
-  List<String> listKelas = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B'];
+  List<String> listKelas = [
+  'Kelas 1A', 'Kelas 1B', 'Kelas 1C', 'Kelas 1D',
+  'Kelas 2A', 'Kelas 2B', 'Kelas 2C',
+  'Kelas 3A', 'Kelas 3B', 'Kelas 3C',
+  'Kelas 4A', 'Kelas 4B', 'Kelas 4C',
+  'Kelas 5A', 'Kelas 5B', 'Kelas 5C',
+  'Kelas 6A', 'Kelas 6B', 'Kelas 6C',
+];
   List<String> listMapel = ['Matematika', 'Bahasa Indonesia', 'IPA', 'IPS', 'PPKn', 'PAI', 'PJOK', 'TIK'];
 
   List<Map<String, dynamic>> listSiswa = [];
