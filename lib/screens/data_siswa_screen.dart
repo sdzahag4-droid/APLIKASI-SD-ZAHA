@@ -22,63 +22,48 @@ class _DataSisnaScreenState extends State<DataSiswaScreen> {
   }
 
   Future<void> fetchDataSiswa() async {
+    setState(() { isLoading = true; });
     try {
-      final response = await http.post(
-        Uri.parse(iUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
+      var url = Uri.parse(AppConfig.apiUrl);
+      var client = http.Client();
+      
+      var request = http.Request('POST', url)
+        ..headers['Content-Type'] = 'application/json'
+        ..body = jsonEncode({
           "action": "getDataSiswa",
           "kelas": widget.kelas,
           "id_lembaga": idLembaga,
-        }),
-      );
+        });
 
-      // Cek apakah widget masih aktif sebelum mengubah state
+      var streamedResponse = await client.send(request);
+      var response = await http.Response.fromStream(streamedResponse);
+      client.close();
+
       if (!mounted) return;
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        var data = jsonDecode(response.body);
         if (data['status'] == 'success') {
           List<dynamic> rawData = data['data'] ?? [];
-
-          // Filter ketat: Hanya ambil data yang benar-benar siswa murni
-          List<dynamic> filteredData = rawData.where((item) {
-            String role = (item['Role'] ?? item['role'] ?? '').toString().toLowerCase();
-            String jabatan = (item['Jabatan'] ?? item['jabatan'] ?? '').toString().toLowerCase();
-            String nama = (item['Nama'] ?? item['nama'] ?? '').toString().toLowerCase();
-
-            // Buang jika terdeteksi sebagai guru, admin, karyawan, wali kelas, atau nama guru terkait
-            if (role == 'guru' || 
-                role == 'admin' || 
-                role == 'karyawan' || 
-                jabatan.contains('wali') || 
-                jabatan.contains('guru') ||
-                nama.contains('ely dewi')) {
-              return false; 
-            }
-            
-            return true; // Loloskan hanya untuk siswa
-          }).toList();
-
-          if (!mounted) return;
           setState(() {
-            listSiswa = filteredData;
+            listSiswa = rawData;
             isLoading = false;
           });
         } else {
-          if (!mounted) return;
           setState(() {
             isLoading = false;
           });
-          print("Gagal memuat data: ${data['message']}");
         }
+      } else {
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         isLoading = false;
       });
-      print("Error: $e");
     }
   }
 
