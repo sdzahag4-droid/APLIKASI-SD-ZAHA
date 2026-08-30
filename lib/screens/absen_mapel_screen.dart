@@ -15,18 +15,18 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
   bool isLoading = false;
   bool isLoadingSiswa = false;
 
-  String? selectedKelas = 'Kelas 1A';
+  String? selectedKelas = '1A';
   String selectedMapel = 'Matematika';
 
   // Daftar kelas disesuaikan dengan format di tab Siswa (misal: 1A, 1B, dst.)
   List<String> listKelas = [
-  'Kelas 1A', 'Kelas 1B', 'Kelas 1C', 'Kelas 1D',
-  'Kelas 2A', 'Kelas 2B', 'Kelas 2C',
-  'Kelas 3A', 'Kelas 3B', 'Kelas 3C',
-  'Kelas 4A', 'Kelas 4B', 'Kelas 4C',
-  'Kelas 5A', 'Kelas 5B', 'Kelas 5C',
-  'Kelas 6A', 'Kelas 6B', 'Kelas 6C',
-];
+    '1A', '1B', '1C', '1D',
+    '2A', '2B', '2C',
+    '3A', '3B', '3C',
+    '4A', '4B', '4C',
+    '5A', '5B', '5C',
+    '6A', '6B', '6C',
+  ];
   List<String> listMapel = ['Matematika', 'Bahasa Indonesia', 'IPA', 'IPS', 'PPKn', 'PAI', 'PJOK', 'TIK'];
 
   List<Map<String, dynamic>> listSiswa = [];
@@ -60,34 +60,34 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
-List tempuanData = data['data'] ?? [];
+          List tempuanData = data['data'] ?? [];
 
-        // FILTER: Buang nama guru / wali kelas atau baris kosong
-        var tempuanBersih = tempuanData.where((siswa) {
-          String nama = siswa['nama_siswa'] ?? siswa['Nama'] ?? '';
-          bool bukanGuru = !nama.toLowerCase().contains('s.pd') && 
-                            !nama.toLowerCase().contains('guru') &&
-                            nama != 'Irawati, S.Pd.I.';
-          return bukanGuru;
-        }).toList();
-
-        // Bersihkan controller lama
-        for (var c in _nilaiControllers) {
-          c.dispose();
-        }
-        _nilaiControllers.clear();
-
-        setState(() {
-          listSiswa = tempuanBersih.map((siswa) {
-            _nilaiControllers.add(TextEditingController(text: ''));
-            return {
-              'nama_siswa': siswa['nama_siswa'] ?? 'Tanpa Nama',
-              'status_kehadiran': 'Hadir',
-              'keterangan': '-',
-              'nilai': '',
-            };
+          // FILTER: Buang nama guru / wali kelas atau baris kosong
+          var tempuanBersih = tempuanData.where((siswa) {
+            String nama = siswa['nama_siswa'] ?? siswa['Nama'] ?? '';
+            bool bukanGuru = !nama.toLowerCase().contains('s.pd') && 
+                             !nama.toLowerCase().contains('guru') &&
+                             nama != 'Irawati, S.Pd.I.';
+            return bukanGuru;
           }).toList();
-          isLoadingSiswa = false;
+
+          // Bersihkan controller lama
+          for (var c in _nilaiControllers) {
+            c.dispose();
+          }
+          _nilaiControllers.clear();
+
+          setState(() {
+            listSiswa = tempuanBersih.map((siswa) {
+              _nilaiControllers.add(TextEditingController(text: ''));
+              return {
+                'nama_siswa': siswa['nama_siswa'] ?? 'Tanpa Nama',
+                'status_kehadiran': 'Hadir',
+                'keterangan': '-',
+                'nilai': '',
+              };
+            }).toList();
+            isLoadingSiswa = false;
           });
         }
       }
