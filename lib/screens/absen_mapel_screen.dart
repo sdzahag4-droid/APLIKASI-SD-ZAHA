@@ -189,7 +189,7 @@ List tempuanData = data['data'] ?? [];
                     value: selectedKelas,
                     decoration: const InputDecoration(labelText: 'Kelas', border: OutlineInputBorder()),
                     items: listKelas.map((kelas) {
-                      return DropdownMenuItem(value: kelas, child: Text('Kelas $kelas'));
+                      return DropdownMenuItem(value: kelas, child: Text(kelas));
                     }).toList(),
                     onChanged: (val) {
                       setState(() {
