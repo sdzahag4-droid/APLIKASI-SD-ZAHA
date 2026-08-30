@@ -18,7 +18,7 @@ class _AbsenMapelScreenState extends State<AbsenMapelScreen> {
   String? selectedKelas = '1A';
   String selectedMapel = 'Matematika';
 
-  // Daftar kelas disesuaikan dengan format di tab Siswa (misal: 1A, 1B, dst.)
+  // Daftar kelas sesuai format database
   List<String> listKelas = [
     '1A', '1B', '1C', '1D',
     '2A', '2B', '2C',
