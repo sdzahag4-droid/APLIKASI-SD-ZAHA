@@ -60,41 +60,50 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
     return "-";
   }
 
-  Future<void> _fetchRekapAbsenGuru() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final response = await http.post(
-        Uri.parse(AppConfig.apiUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "action": "getRekapAbsenGuru",
-          "id_lembaga": AppConfig.idLembaga,
-        }),
-      );
+Future<void> fetchRekapAbsenGuru() async {
+  setState(() {
+    isLoading = true;
+  });
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == 'success') {
-          setState(() {
-            listRekapGuru = data['data'] ?? [];
-            isLoading = false;
-          });
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-        }
+  try {
+    final response = await http.post(
+      Uri.parse(AppConfig.apiUrl),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "action": "getRekapAbsenGuru",
+        "id_lembaga": AppConfig.idLembaga,
+      }),
+    );
+
+    // Tangani jika terjadi redirect (301, 302) atau sukses (200)
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == 'success') {
+        setState(() {
+          listRekapGuru = data['data'] ?? [];
+        });
+      } else {
+        setState(() {
+          listRekapGuru = [];
+        });
       }
-    } catch (e) {
+    } else if (response.statusCode == 301 || response.statusCode == 302) {
+      // Tangani kasus redirect URL Apps Script
+      print("Terjadi redirect URL, periksa kembali AppConfig.apiUrl");
+    } else {
       setState(() {
-        isLoading = false;
+        listRekapGuru = [];
       });
-      debugPrint("Error: $e");
     }
+  } catch (e) {
+    print("Error fetching rekap absen guru: $e");
+  } finally {
+    // Blok finally memastikan loading selalu dimatikan dalam kondisi apapun
+    setState(() {
+      isLoading = false;
+    });
   }
-
+  
   // Fungsi Cetak PDF Rekap Absen Guru
   Future<void> _cetakPdfRekapGuru() async {
     final pdf = pw.Document();
