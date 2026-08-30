@@ -20,7 +20,7 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchRekapAbsenGuru();
+    _fetchRekapAbsenGuru(); // Diperbaiki agar sesuai dengan nama fungsi di bawah
   }
 
   // Helper untuk mengubah tanggal raw (ISO) menjadi format "Bulan Tahun" (misal: "Agustus 2026")
@@ -30,29 +30,18 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
     try {
       DateTime dateTime = DateTime.parse(rawDate);
       const listBulan = [
-        "Januari",
-        "Februari",
-        "Maret",
-        "April",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agustus",
-        "September",
-        "Oktober",
-        "November",
-        "Desember"
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
       ];
 
       String namaBulan = listBulan[dateTime.month - 1];
       return "$namaBulan ${dateTime.year}";
     } catch (e) {
-      // Jika format bukan tanggal ISO, tampilkan string aslinya
       return rawDate;
     }
   }
 
-  // Mengambil string bulan untuk judul periode header (diambil dari data pertama jika ada)
+  // Mengambil string bulan untuk judul periode header
   String _getJudulPeriode() {
     if (listRekapGuru.isNotEmpty && listRekapGuru[0]['Bulan'] != null) {
       return _formatPeriode(listRekapGuru[0]['Bulan'].toString());
@@ -60,81 +49,77 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
     return "-";
   }
 
-Future<void> fetchRekapAbsenGuru() async {
-  setState(() {
-    isLoading = true;
-  });
+  // Fungsi mengambil data dari server (Diperbaiki namanya menggunakan underscore di depan)
+  Future<void> _fetchRekapAbsenGuru() async {
+    setState(() {
+      isLoading = true;
+    });
 
-  try {
-    final response = await http.post(
-      Uri.parse(AppConfig.apiUrl),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "action": "getRekapAbsenGuru",
-        "id_lembaga": AppConfig.idLembaga,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(AppConfig.apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "action": "getRekapAbsenGuru",
+          "id_lembaga": AppConfig.idLembaga,
+        }),
+      );
 
-    // Tangani jika terjadi redirect (301, 302) atau sukses (200)
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data['status'] == 'success') {
-        setState(() {
-          listRekapGuru = data['data'] ?? [];
-        });
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 'success') {
+          setState(() {
+            listRekapGuru = data['data'] ?? [];
+          });
+        } else {
+          setState(() {
+            listRekapGuru = [];
+          });
+        }
+      } else if (response.statusCode == 301 || response.statusCode == 302) {
+        print("Terjadi redirect URL, periksa kembali AppConfig.apiUrl");
       } else {
         setState(() {
           listRekapGuru = [];
         });
       }
-    } else if (response.statusCode == 301 || response.statusCode == 302) {
-      // Tangani kasus redirect URL Apps Script
-      print("Terjadi redirect URL, periksa kembali AppConfig.apiUrl");
-    } else {
+    } catch (e) {
+      print("Error fetching rekap absen guru: $e");
+    } finally {
       setState(() {
-        listRekapGuru = [];
+        isLoading = false;
       });
     }
-  } catch (e) {
-    print("Error fetching rekap absen guru: $e");
-  } finally {
-    // Blok finally memastikan loading selalu dimatikan dalam kondisi apapun
-    setState(() {
-      isLoading = false;
-    });
   }
-  
-  // Fungsi Cetak PDF Rekap Absen Guru
+
+  // Fungsi Cetak PDF Rekap Absen Guru (Dipindahkan keluar dari fungsi fetch agar rapi)
   Future<void> _cetakPdfRekapGuru() async {
     final pdf = pw.Document();
     final periodeTeks = _getJudulPeriode();
 
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.a4.landscape, // Orientasi landscape
+        pageFormat: PdfPageFormat.a4.landscape,
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // --- JUDUL UTAMA ---
               pw.Text(
-                  "SD ZAINUL HASAN GENGGONG",
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
+                "SD ZAINUL HASAN GENGGONG",
+                style: pw.TextStyle(
+                  fontSize: 14,
+                  fontWeight: pw.FontWeight.bold,
                 ),
-                pw.SizedBox(height: 2),
-                pw.Text(
-                  "LAPORAN REKAPITULASI ABSENSI GURU & PEGAWAI",
-                  style: pw.TextStyle(
-                    fontSize: 16,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
+              ),
+              pw.SizedBox(height: 2),
+              pw.Text(
+                "LAPORAN REKAPITULASI ABSENSI GURU & PEGAWAI",
+                style: pw.TextStyle(
+                  fontSize: 16,
+                  fontWeight: pw.FontWeight.bold,
                 ),
-                pw.SizedBox(height: 4),
-
-              // --- KETERANGAN PERIODE BULAN & TAHUN ---
+              ),
+              pw.SizedBox(height: 4),
               pw.Text(
                 "PERIODE: ${periodeTeks.toUpperCase()}",
                 style: pw.TextStyle(
@@ -144,19 +129,10 @@ Future<void> fetchRekapAbsenGuru() async {
                 ),
               ),
               pw.SizedBox(height: 12),
-
-              // --- TABEL DATA ---
               pw.Table.fromTextArray(
                 headers: [
-                  'No',
-                  'Nama',
-                  'Bulan',
-                  'Hadir',
-                  'Terlambat',
-                  'Izin',
-                  'Sakit',
-                  'Cuti',
-                  'Tidak Masuk',
+                  'No', 'Nama', 'Bulan', 'Hadir', 'Terlambat',
+                  'Izin', 'Sakit', 'Cuti', 'Tidak Masuk',
                 ],
                 data: List.generate(listRekapGuru.length, (index) {
                   final guru = listRekapGuru[index];
@@ -176,8 +152,7 @@ Future<void> fetchRekapAbsenGuru() async {
                   fontWeight: pw.FontWeight.bold,
                   color: PdfColors.white,
                 ),
-                headerDecoration:
-                    const pw.BoxDecoration(color: PdfColors.teal),
+                headerDecoration: const pw.BoxDecoration(color: PdfColors.teal),
                 cellAlignment: pw.Alignment.centerLeft,
                 cellAlignments: {
                   0: pw.Alignment.center,
@@ -188,7 +163,6 @@ Future<void> fetchRekapAbsenGuru() async {
                   6: pw.Alignment.center,
                   7: pw.Alignment.center,
                   8: pw.Alignment.center,
-                  9: pw.Alignment.center,
                 },
               ),
             ],
@@ -223,8 +197,7 @@ Future<void> fetchRekapAbsenGuru() async {
                   children: [
                     const Text(
                       "Data Kehadiran Guru",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       "Total: ${listRekapGuru.length} Pegawai | Periode: ${_getJudulPeriode()}",
@@ -237,8 +210,7 @@ Future<void> fetchRekapAbsenGuru() async {
                     backgroundColor: Colors.teal,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed:
-                      listRekapGuru.isEmpty ? null : _cetakPdfRekapGuru,
+                  onPressed: listRekapGuru.isEmpty ? null : _cetakPdfRekapGuru,
                   icon: const Icon(Icons.print, size: 18),
                   label: const Text("Cetak PDF"),
                 ),
@@ -256,8 +228,7 @@ Future<void> fetchRekapAbsenGuru() async {
                         itemCount: listRekapGuru.length,
                         itemBuilder: (context, index) {
                           final guru = listRekapGuru[index];
-                          final periodeStr =
-                              _formatPeriode(guru['Bulan']?.toString());
+                          final periodeStr = _formatPeriode(guru['Bulan']?.toString());
 
                           return Card(
                             margin: const EdgeInsets.symmetric(
