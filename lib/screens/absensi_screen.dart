@@ -104,32 +104,32 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
     return '${jam.toString().padLeft(2, '0')}:${menit.toString().padLeft(2, '0')}';
   }
 
-    // Fungsi untuk mengambil foto menggunakan Kamera Depan (Selfie)
-    Future<bool> _ambilFotoSelfie() async {
-      try {
-        final XFile? photo = await _picker.pickImage(
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.front, // Mengarahkan ke kamera depan
-          imageQuality: 50, // Kompres kualitas gambar agar tidak terlalu besar ukurannya
-        );
+  // Fungsi untuk mengambil foto menggunakan Kamera Depan (Selfie)
+  Future<bool> _ambilFotoSelfie() async {
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front, // Mengarahkan ke kamera depan
+        imageQuality: 50, // Kompres kualitas gambar agar tidak terlalu besar ukurannya
+      );
 
-        if (photo != null) {
-          setState(() {
-            _imageFile = photo;
-          });
-          return true;
-        }
-        return false;
-      } catch (e) {
+      if (photo != null) {
         setState(() {
-          _statusMessage = 'Gagal membuka kamera: $e';
+          _imageFile = photo;
         });
-        return false;
+        return true;
       }
+      return false;
+    } catch (e) {
+      setState(() {
+        _statusMessage = 'Gagal membuka kamera: $e';
+      });
+      return false;
     }
+  }
 
   // Fungsi untuk mengirim data absensi ke server (Google Sheets)
-Future<void> _kirimAbsensikeServer({
+  Future<void> _kirimAbsensikeServer({
     required String nama,
     required String status,
     required dynamic jarak,
@@ -189,20 +189,6 @@ Future<void> _kirimAbsensikeServer({
       });
     }
   }
-      if (response.statusCode == 200) {
-        final res = jsonDecode(response.body);
-        if (res['status'] == 'success') {
-          print("Data absensi berhasil masuk ke Google Sheets!");
-        } else {
-          print("Gagal dari server: ${res['message']}");
-        }
-      } else {
-        print("HTTP Error: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Terjadi kesalahan saat mengirim data ke server: $e");
-    }
-  }
 
   // Fungsi proses utama saat tombol submit ditekan
   Future<void> _prosesAbsensi() async {
@@ -246,18 +232,13 @@ Future<void> _kirimAbsensikeServer({
         lng: 0,   
         alasan: _keteranganController.text.isNotEmpty ? _keteranganController.text : "-",
       );
-
-      setState(() {
-        _isLoading = false;
-        _isSuccess = true;
-        _statusMessage = 'Berhasil! Status "$_selectedStatus" telah dicatat.';
-      });
       return;
     }
 
     // 3. JIKA PAKAI KAMERA & GPS (Absen Masuk / Absen Pulang)
     if (pakaiKamera) {
       setState(() {
+        _isLoading = true;
         _statusMessage = 'Silakan ambil foto selfie terlebih dahulu...';
       });
 
@@ -319,8 +300,8 @@ Future<void> _kirimAbsensikeServer({
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      double schoolLat = -7.87930; // Koordinat sekolah (bisa diganti sesuai koordinat riil)
-      double schoolLng = 113.375122; // Koordinat sekolah (bisa diganti sesuai koordinat riil)
+      double schoolLat = -7.87930; // Koordinat sekolah
+      double schoolLng = 113.375122; // Koordinat sekolah
       double maxRadiusMeter = 70.0;
 
       double distanceInMeters = Geolocator.distanceBetween(
@@ -330,22 +311,15 @@ Future<void> _kirimAbsensikeServer({
         schoolLng,
       );
 
-      // Bulatkan jarak agar tampil pas (misal: 12 meter)
       int jarakBulat = distanceInMeters.round();
 
-      setState(() {
-        _isLoading = false;
-        if (distanceInMeters <= maxRadiusMeter) {
+      if (distanceInMeters <= maxRadiusMeter) {
+        setState(() {
           _isSuccess = true;
-          _statusMessage = 'Absen Berhasil! Dalam area sekolah ($jarakBulat meter dari sekolah)';
-        } else {
-          _isSuccess = false;
-          _statusMessage = 'Absen Gagal! Anda berada di luar radius sekolah ($jarakBulat meter). Maksimal 70 meter.';
-        }
-      });
+          _statusMessage = 'Mengirim data absen ke server...';
+        });
 
-      if (_isSuccess) {
-        // Konversi foto ke base64 jika ingin dikirim
+        // Konversi foto ke base64 jika ada
         String? base64Image;
         if (_imageFile != null) {
           List<int> imageBytes = await _imageFile!.readAsBytes();
@@ -359,7 +333,14 @@ Future<void> _kirimAbsensikeServer({
           lat: position.latitude,
           lng: position.longitude,
           fotoBase64: base64Image,
+          alasan: _keteranganController.text.isNotEmpty ? _keteranganController.text : "-",
         );
+      } else {
+        setState(() {
+          _isLoading = false;
+          _isSuccess = false;
+          _statusMessage = 'Absen Gagal! Anda berada di luar radius sekolah ($jarakBulat meter). Maksimal 70 meter.';
+        });
       }
     } catch (e) {
       setState(() {
@@ -396,22 +377,22 @@ Future<void> _kirimAbsensikeServer({
                       border: Border.all(color: Colors.green, width: 3),
                       color: Colors.grey.shade200,
                     ),
-                  child: _imageFile != null
-                      ? ClipOval(
-                          child: kIsWeb
-                              ? Image.network(
-                                  _imageFile!.path, // Untuk Flutter Web (menggunakan URL path lokal browser)
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.file(
-                                  File(_imageFile!.path), // Untuk Android / iOS
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                        )
+                    child: _imageFile != null
+                        ? ClipOval(
+                            child: kIsWeb
+                                ? Image.network(
+                                    _imageFile!.path, 
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    File(_imageFile!.path), 
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                          )
                         : const Icon(Icons.person, size: 70, color: Colors.grey),
                   ),
                 ],
