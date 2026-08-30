@@ -129,32 +129,66 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
     }
 
   // Fungsi untuk mengirim data absensi ke server (Google Sheets)
-  Future<void> _kirimAbsensikeServer({
+Future<void> _kirimAbsensikeServer({
     required String nama,
     required String status,
     required dynamic jarak,
     required dynamic lat,
     required dynamic lng,
-    String? fotoBase64, // Tambahan parameter untuk mengirim foto jika diperlukan
+    String? fotoBase64, 
     String? alasan,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse(AppConfig.apiUrl),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
+      var url = Uri.parse(AppConfig.apiUrl);
+      var client = http.Client();
+      
+      var request = http.Request('POST', url)
+        ..headers['Content-Type'] = 'application/json'
+        ..body = jsonEncode({
           "action": "simpan_absensi",
-          "nama": nama,        
-          "jabatan": "Guru",    
-          "status": status,    
-          "jarak": jarak,      
-          "lat": lat,          
-          "lng": lng,  
-          "alasan": alasan ?? "-",        
-          "foto": fotoBase64 ?? "", // Kirim string base64 foto jika backend mendukung
-        }),
-      );
+          "nama": nama,
+          "status": status,
+          "jarak": jarak,
+          "lat": lat,
+          "lng": lng,
+          "foto": fotoBase64 ?? "",
+          "alasan": alasan ?? "",
+        });
 
+      var streamedResponse = await client.send(request);
+      var response = await http.Response.fromStream(streamedResponse);
+      client.close();
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == 'success') {
+          setState(() {
+            _isLoading = false;
+            _isSuccess = true;
+            _statusMessage = 'Absensi berhasil disimpan!';
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+            _isSuccess = false;
+            _statusMessage = 'Gagal: ${data['message']}';
+          });
+        }
+      } else {
+        setState(() {
+          _isLoading = false;
+          _isSuccess = false;
+          _statusMessage = 'Gagal terhubung ke server (Code: ${response.statusCode})';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _isSuccess = false;
+        _statusMessage = 'Terjadi kesalahan: $e';
+      });
+    }
+  }
       if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
         if (res['status'] == 'success') {
