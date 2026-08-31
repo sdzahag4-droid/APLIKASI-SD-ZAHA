@@ -20,15 +20,21 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchRekapAbsenGuru(); // Diperbaiki agar sesuai dengan nama fungsi di bawah
+    _fetchRekapAbsenGuru();
   }
 
-  // Helper untuk mengubah tanggal raw (ISO) menjadi format "Bulan Tahun" (misal: "Agustus 2026")
+  // Helper untuk mengubah tanggal raw (ISO atau format tahun-bulan) menjadi format "Bulan Tahun"
   String _formatPeriode(String? rawDate) {
     if (rawDate == null || rawDate.isEmpty || rawDate == '-') return '-';
 
     try {
-      DateTime dateTime = DateTime.parse(rawDate);
+      // Jika format dari server hanya "YYYY-MM", tambahkan "-01" agar valid diparse DateTime
+      String parseableDate = rawDate;
+      if (rawDate.length == 7 && rawDate.contains('-')) {
+        parseableDate = "$rawDate-01";
+      }
+
+      DateTime dateTime = DateTime.parse(parseableDate);
       const listBulan = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -37,6 +43,7 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
       String namaBulan = listBulan[dateTime.month - 1];
       return "$namaBulan ${dateTime.year}";
     } catch (e) {
+      // Jika gagal parse sama sekali, kembalikan teks aslinya
       return rawDate;
     }
   }
@@ -49,8 +56,9 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
     return "-";
   }
 
-  // Fungsi mengambil data dari server (Diperbaiki namanya menggunakan underscore di depan)
+  // Fungsi mengambil data dari server
   Future<void> _fetchRekapAbsenGuru() async {
+    if (!mounted) return;
     setState(() {
       isLoading = true;
     });
@@ -65,16 +73,20 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
         }),
       );
 
+      if (!mounted) return;
+
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == 'success') {
-          setState(() {
-            listRekapGuru = data['data'] ?? [];
-          });
-        } else {
-          setState(() {
-            listRekapGuru = [];
-          });
+        if (response.body.isNotEmpty) {
+          final data = jsonDecode(response.body);
+          if (data['status'] == 'success') {
+            setState(() {
+              listRekapGuru = data['data'] ?? [];
+            });
+          } else {
+            setState(() {
+              listRekapGuru = [];
+            });
+          }
         }
       } else if (response.statusCode == 301 || response.statusCode == 302) {
         print("Terjadi redirect URL, periksa kembali AppConfig.apiUrl");
@@ -86,13 +98,15 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
     } catch (e) {
       print("Error fetching rekap absen guru: $e");
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
-  // Fungsi Cetak PDF Rekap Absen Guru (Dipindahkan keluar dari fungsi fetch agar rapi)
+  // Fungsi Cetak PDF Rekap Absen Guru
   Future<void> _cetakPdfRekapGuru() async {
     final pdf = pw.Document();
     final periodeTeks = _getJudulPeriode();
