@@ -76,25 +76,25 @@ class _RekapAbsenGuruScreenState extends State<RekapAbsenGuruScreen> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
-        if (response.body.isNotEmpty) {
-          final data = jsonDecode(response.body);
-          if (data['status'] == 'success') {
-            setState(() {
-              listRekapGuru = data['data'] ?? [];
-            });
-          } else {
-            setState(() {
-              listRekapGuru = [];
-            });
-          }
-        }
-      } else if (response.statusCode == 301 || response.statusCode == 302) {
-        print("Terjadi redirect URL, periksa kembali AppConfig.apiUrl");
-      } else {
-        setState(() {
-          listRekapGuru = [];
-        });
-      }
+              if (response.body.isNotEmpty) {
+                final data = jsonDecode(response.body);
+                if (data['status'] == 'success') {
+                  setState(() {
+                    listRekapGuru = data['data'] ?? [];
+                  });
+                } else {
+                  setState(() {
+                    listRekapGuru = [];
+                  });
+                }
+              }
+            } else if (response.statusCode == 301 || response.statusCode == 302) {
+              print("Terjadi redirect URL, periksa kembali AppConfig.apiUrl");
+            } else {
+              setState(() {
+                listRekapGuru = [];
+              });
+            }
     } catch (e) {
       print("Error fetching rekap absen guru: $e");
     } finally {
